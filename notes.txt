@@ -1,0 +1,11 @@
+"You" are a God - or rather, more accurately, a statue in the middle of town. Or you *will* be, anyway: right now you're a rock, and the "town" is at best a 
+river-side village. You influence the development of the town - the rulers, and the people themselves - to grow its size and power, and by extension your own.
+Individual citizens exist or don't given on the game mode; can take control of armies directly. Have to answer prayers and portents; rivalries with other gods.
+World is structured to make it very difficult to make a lasting empire, beyond the reign of a single ruler (under your guidance, of course). Effectively a roguelike.
+Dwarf FortressxCivilisationxCrusader Kings. 
+
+
+To start development: make a 1000x1000 (1 square kilometre) map. Create "house" class - an x and y location, and a width and height - and a linked list (or some 
+other collection) of houses. Repeatedly ask user "do you want to place a house?" If they say yes, create a new house of random size and location within the map, 
+alternately pan around the map in response to user commands. Make more an more complex systems for building placement, eventually creating a city from asking the 
+user for advice - i.e. not directly taking orders from the user.
