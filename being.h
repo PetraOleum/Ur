@@ -32,6 +32,7 @@
 class Being
 {
 	public:
+		std::pair<int, int> position;
 		/* ====================  LIFECYCLE     ======================================= */
 		Being ();                             /* constructor      */
 		Being ( const Being &other );   /* copy constructor */

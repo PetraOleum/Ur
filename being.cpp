@@ -27,6 +27,7 @@
  */
 Being::Being ()
 {
+
 }  /* -----  end of method Being::Being  (constructor)  ----- */
 
 /*
@@ -38,6 +39,7 @@ Being::Being ()
  */
 Being::Being ( const Being &other )
 {
+	position = other.position;
 }  /* -----  end of method Being::Being  (copy constructor)  ----- */
 
 /*
@@ -62,6 +64,7 @@ Being::~Being ()
 Being::operator = ( const Being &other )
 {
 	if ( this != &other ) {
+		position = other.position;
 	}
 	return *this;
 }  /* -----  end of method Being::operator =  (assignment operator)  ----- */
