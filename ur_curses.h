@@ -19,6 +19,9 @@
 #ifndef  UR_CURSES_INC
 #define  UR_CURSES_INC
 
+#define PERSON_CHAR '@'
+#define PERSON_COLOUR COLOR_PAIR(2)
+
 #include <ncurses.h>
 #include "ur_common.h"
 #include "rectangle.h"
@@ -98,6 +101,12 @@ void updatemap(const City &_city) {
 			attron(environment_object_colour(objat));
 			mvaddch(y, x, environment_object_symbol(objat));
 		}
+	attron(PERSON_COLOUR);
+	for (unsigned int i = 0; i < _city.number_of_people(); i++) {
+		std::pair<int, int> p_pos = _city.get_person(i);
+		if (displaybounds.contains(p_pos))
+				mvaddch(p_pos.first, p_pos.second, PERSON_CHAR);
+	}
 	attron(COLOR_PAIR(6));
 	refresh();
 }

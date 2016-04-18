@@ -1,6 +1,6 @@
 #include <ncurses.h>
 #include <time.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include "rectangle.h"
 #include "house.h"

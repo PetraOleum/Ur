@@ -1,7 +1,7 @@
 all: ur
 
-ur: main.o rectangle.o house.o city.o
-	g++ -o ur main.o rectangle.o house.o city.o -std=c++11 -lncurses
+ur: main.o rectangle.o house.o city.o being.o
+	g++ -o ur main.o rectangle.o house.o city.o being.o -std=c++11 -lncurses
 
 main.o:
 	g++ -c main.cpp -std=c++11
@@ -14,6 +14,9 @@ house.o:
 
 city.o:
 	g++ -c city.cpp -std=c++11
+
+being.o:
+	g++ -c being.cpp -std=c++11
 
 clean:
 	rm *.o ur

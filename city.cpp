@@ -35,6 +35,11 @@ City::City ()
 		for (int x = 0; x < CITY_SIZE; x++)
 			objectmap[y][x] = EnvironmentObject::OpenGround;
 	}
+	people = new std::vector<Being *>;
+	for (int i = 0; i < 100; i++) {
+		Being * _bn = new Being(this);
+		people->push_back(_bn);
+	}
 }  /* -----  end of method City::City  (constructor)  ----- */
 
 /*
@@ -58,6 +63,11 @@ City::City ( const City &other )
 		for (int x = 0; x < CITY_SIZE; x++)
 			objectmap[y][x] = other.objectmap[y][x];
 	}
+	people = new std::vector<Being *>;
+	for (unsigned int i = 0; i < other.number_of_people(); i++) {
+		Being * bn = new Being(*(other.people->at(i)));
+		people->push_back(bn);
+	}
 	
 }  /* -----  end of method City::City  (copy constructor)  ----- */
 
@@ -74,6 +84,9 @@ City::~City ()
 	for (int y = 0; y < CITY_SIZE; y++)
 		delete[] objectmap[y];
 	delete[] objectmap;
+	for (unsigned int i = 0; i < number_of_people(); i++)
+		delete people->at(i);
+	delete people;
 }  /* -----  end of method City::~City  (destructor)  ----- */
 
 /*
@@ -98,7 +111,15 @@ City::operator = ( const City &other )
 			objectmap[y] = new EnvironmentObject[CITY_SIZE];
 			for (int x = 0; x < CITY_SIZE; x++)
 				objectmap[y][x] = other.objectmap[y][x];
-	}
+		}
+		for (unsigned int i = 0; i < number_of_people(); i++)
+			delete people->at(i);
+		delete people;
+		people = new std::vector<Being *>;
+		for (unsigned int i = 0; i < other.number_of_people(); i++) {
+			Being * bn = new Being(*(other.people->at(i)));
+			people->push_back(bn);
+		}
 	}
 	return *this;
 }  /* -----  end of method City::operator =  (assignment operator)  ----- */
@@ -301,4 +322,16 @@ std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::p
 	
 
 	return path;
+}
+
+void City::step() {
+	using point = std::pair<int, int>;
+	for (unsigned int i = 0; i < number_of_people(); i++) {
+		Being * b_current = people->at(i);
+		point p_current = b_current->position;
+		point p_next = b_current->propose_action();
+		EnvironmentObject nobj = get(p_next.first, p_next.second);
+		if (passible(nobj) && ABS(p_current.first - p_next.first) < 2 && ABS(p_current.second - p_next.second) < 2)
+			b_current->position = p_next;
+	}
 }

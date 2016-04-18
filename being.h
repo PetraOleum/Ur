@@ -23,6 +23,8 @@
 #include "ur_common.h"
 #include <utility>
 #include <queue>
+//#include "city.h"
+#include "cityhelper.h"
 
 /*
  * =====================================================================================
@@ -34,15 +36,17 @@ class Being
 {
 	public:
 		std::pair<int, int> position;
-		std::queue<std::pair<int, int> > * (*pathing)(std::pair<int, int>, std::pair<int, int>);
+		CityHelper * helper;
 		/* ====================  LIFECYCLE     ======================================= */
-		Being (std::queue<std::pair<int, int> > * (*pathingfunction)(std::pair<int, int>, std::pair<int, int> ));                             /* constructor      */
+		Being (CityHelper * _helper);                             /* constructor      */
 		Being ( const Being &other );   /* copy constructor */
 		~Being ();                            /* destructor       */
 
 		/* ====================  ACCESSORS     ======================================= */
 
 		/* ====================  MUTATORS      ======================================= */
+
+		std::pair<int, int> propose_action();
 
 		/* ====================  OPERATORS     ======================================= */
 
@@ -53,9 +57,11 @@ class Being
 
 	private:
 		inline std::queue<std::pair<int, int> > * pathto(std::pair<int, int> destination) {
-			return pathing(position, destination);
+			return helper->astar(position, destination);
 		}
 		/* ====================  DATA MEMBERS  ======================================= */
+
+		std::queue<std::pair<int, int> > * planned_path;
 
 }; /* -----  end of class Being  ----- */
 
