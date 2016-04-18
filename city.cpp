@@ -36,8 +36,11 @@ City::City ()
 			objectmap[y][x] = EnvironmentObject::OpenGround;
 	}
 	people = new std::vector<Being *>;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 30; i++) {
 		Being * _bn = new Being(this);
+		do {
+			_bn->position = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		} while (!passible(get(_bn->position.first, _bn->position.second)));
 		people->push_back(_bn);
 	}
 }  /* -----  end of method City::City  (constructor)  ----- */
@@ -264,6 +267,8 @@ bool City::add_building(Building building_type) {
 std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::pair<int, int> finish) {
 	using point = std::pair<int, int>;
 	std::queue<point > * path = new std::queue<point>;
+	if (!passible(get(start.first, start.second)) || !passible(get(finish.first, finish.second)))
+		return path;
 	std::priority_queue<std::pair<int, point >, std::vector<std::pair<int, point > >, std::greater<std::pair<int, point > > > fronteir;
 	fronteir.push(std::make_pair(0, start));
 	std::map<point, point> came_from;

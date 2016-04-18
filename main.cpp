@@ -77,6 +77,10 @@ int main() {
 				break;
 			case 'r':
 				displaybounds = Rectangle(rand() % (CITY_SIZE - LINES), rand() % (CITY_SIZE - COLS), LINES - 1, COLS - 1);
+				break;
+			case '.':
+				city.step();
+				break;
 			default:
 				break;
 		}

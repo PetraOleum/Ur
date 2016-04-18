@@ -20,7 +20,7 @@
 #define  UR_CURSES_INC
 
 #define PERSON_CHAR '@'
-#define PERSON_COLOUR COLOR_PAIR(2)
+#define PERSON_COLOUR COLOR_PAIR(11)
 
 #include <ncurses.h>
 #include "ur_common.h"
@@ -40,6 +40,7 @@ void initcolors() {
 	init_pair(8, COLOR_RED, COLOR_BLACK);
 	init_pair(9, COLOR_RED, COLOR_YELLOW);
 	init_pair(10, COLOR_CYAN, COLOR_BLACK);
+	init_pair(11, COLOR_GREEN, COLOR_BLUE);
 }
 
 void start_curses() {
@@ -105,7 +106,7 @@ void updatemap(const City &_city) {
 	for (unsigned int i = 0; i < _city.number_of_people(); i++) {
 		std::pair<int, int> p_pos = _city.get_person(i);
 		if (displaybounds.contains(p_pos))
-				mvaddch(p_pos.first, p_pos.second, PERSON_CHAR);
+				mvaddch(p_pos.first - displaybounds.ylow(), p_pos.second - displaybounds.xlow(), PERSON_CHAR);
 	}
 	attron(COLOR_PAIR(6));
 	refresh();

@@ -103,7 +103,7 @@ std::pair<int, int> Being::propose_action() {
 	using point = std::pair<int, int>;
 	if (planned_path->empty()) {
 		delete planned_path;
-		point dest = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		point dest = std::make_pair(rand() % 10 - rand() % 10 + position.first, rand() % 10 - rand() % 10 + position.second);
 		planned_path = pathto(dest);
 		return std::make_pair(-1, -1);
 	}
