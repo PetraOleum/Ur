@@ -22,6 +22,7 @@
 
 #include "ur_common.h"
 #include <utility>
+#include <queue>
 
 /*
  * =====================================================================================
@@ -33,8 +34,9 @@ class Being
 {
 	public:
 		std::pair<int, int> position;
+		std::queue<std::pair<int, int> > * (*pathing)(std::pair<int, int>, std::pair<int, int>);
 		/* ====================  LIFECYCLE     ======================================= */
-		Being ();                             /* constructor      */
+		Being (std::queue<std::pair<int, int> > * (*pathingfunction)(std::pair<int, int>, std::pair<int, int> ));                             /* constructor      */
 		Being ( const Being &other );   /* copy constructor */
 		~Being ();                            /* destructor       */
 
@@ -50,6 +52,9 @@ class Being
 		/* ====================  DATA MEMBERS  ======================================= */
 
 	private:
+		inline std::queue<std::pair<int, int> > * pathto(std::pair<int, int> destination) {
+			return pathing(position, destination);
+		}
 		/* ====================  DATA MEMBERS  ======================================= */
 
 }; /* -----  end of class Being  ----- */

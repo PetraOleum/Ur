@@ -24,6 +24,7 @@
 #include "house.h"
 #include "ur_common.h"
 
+#include <queue>
 
 /*
  * =====================================================================================
@@ -71,6 +72,8 @@ class City
 			else return objectmap[_yvalue][_xvalue];
 		}
 
+		std::queue<std::pair<int, int> > * astar(std::pair<int, int> start, std::pair<int, int> finish);
+
 		/* ====================  MUTATORS      ======================================= */
 		
 		bool add_building(Building building_type);
@@ -93,5 +96,6 @@ class City
 		EnvironmentObject** objectmap;
 
 }; /* -----  end of class City  ----- */
+
 
 #endif   /* ----- #ifndef CITY_H_INC  ----- */

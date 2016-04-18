@@ -25,8 +25,9 @@
  * Description:  constructor
  *--------------------------------------------------------------------------------------
  */
-Being::Being ()
+Being::Being (std::queue<std::pair<int, int> > * (*pathingfunction)(std::pair<int, int>, std::pair<int, int> ))
 {
+	pathing = pathingfunction;
 
 }  /* -----  end of method Being::Being  (constructor)  ----- */
 
@@ -40,6 +41,7 @@ Being::Being ()
 Being::Being ( const Being &other )
 {
 	position = other.position;
+	pathing = other.pathing;
 }  /* -----  end of method Being::Being  (copy constructor)  ----- */
 
 /*
@@ -65,6 +67,7 @@ Being::operator = ( const Being &other )
 {
 	if ( this != &other ) {
 		position = other.position;
+		pathing = other.pathing;
 	}
 	return *this;
 }  /* -----  end of method Being::operator =  (assignment operator)  ----- */
