@@ -40,7 +40,7 @@ void initcolors() {
 	init_pair(8, COLOR_RED, COLOR_BLACK);
 	init_pair(9, COLOR_RED, COLOR_YELLOW);
 	init_pair(10, COLOR_CYAN, COLOR_BLACK);
-	init_pair(11, COLOR_GREEN, COLOR_BLUE);
+	init_pair(11, COLOR_RED, COLOR_GREEN);
 }
 
 void start_curses() {

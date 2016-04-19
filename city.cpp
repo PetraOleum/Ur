@@ -36,13 +36,6 @@ City::City ()
 			objectmap[y][x] = EnvironmentObject::OpenGround;
 	}
 	people = new std::vector<Being *>;
-	for (int i = 0; i < 30; i++) {
-		Being * _bn = new Being(this);
-		do {
-			_bn->position = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
-		} while (!passible(get(_bn->position.first, _bn->position.second)));
-		people->push_back(_bn);
-	}
 }  /* -----  end of method City::City  (constructor)  ----- */
 
 /*

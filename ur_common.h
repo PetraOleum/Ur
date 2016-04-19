@@ -29,7 +29,7 @@
 
 //#define CITY_SIZE 1000 // We'll try a 1000x1000 city first off
 
-#define CITY_SIZE 200
+#define CITY_SIZE 500
 
 enum class Building {
 	None,

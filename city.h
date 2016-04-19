@@ -94,6 +94,16 @@ class City : CityHelper
 		
 		bool add_building(Building building_type);
 
+		inline void add_people(int number) {
+			for (int i = 0; i < number; i++) {
+				Being * _bn = new Being(this);
+				do {
+					_bn->position = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+				} while (!passible(get(_bn->position.first, _bn->position.second)));
+				people->push_back(_bn);
+			}
+		}
+
 		void step();
 
 		/* ====================  OPERATORS     ======================================= */

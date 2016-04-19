@@ -42,6 +42,8 @@ int main() {
 	for (int i = 0; i < 1000; i++)
 		city.add_building(Building::Hovel);
 
+	city.add_people(100);
+
 	char ch;
 
 	updatemap(city);
