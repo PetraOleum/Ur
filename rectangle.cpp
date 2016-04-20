@@ -44,7 +44,7 @@ Rectangle::Rectangle() {
 	y = x = ydelta = xdelta = 0;
 }
 
-Rectangle::Rectangle(Rectangle &r1, Rectangle &r2) {
+Rectangle::Rectangle(const Rectangle &r1, const Rectangle &r2) {
 	if (!overlap(r1, r2)) {
 		y = x = ydelta = xdelta = 0;
 	} else {
@@ -88,7 +88,7 @@ std::vector<std::pair<int, int> > * Rectangle::perimeter() {
 	return prm;
 }
 
-std::vector<std::pair<int, int> > * Rectangle::contact(Rectangle &neighbour) {
+std::vector<std::pair<int, int> > * Rectangle::contact(const Rectangle &neighbour) {
 	std::vector<std::pair<int, int> > * cont = new std::vector<std::pair<int, int> >;
 
 	if (neighbour.ylow() == this->yhigh() + 1) {
@@ -108,7 +108,7 @@ std::vector<std::pair<int, int> > * Rectangle::contact(Rectangle &neighbour) {
 	return cont;
 }
 
-std::vector<std::pair<int, int> > * Rectangle::interlock(Rectangle &neighbour) {
+std::vector<std::pair<int, int> > * Rectangle::interlock(const Rectangle &neighbour) {
 	std::vector<std::pair<int, int> > * inl = new std::vector<std::pair<int, int> >;
 
 	

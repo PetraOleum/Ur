@@ -41,7 +41,7 @@ class Rectangle
 		// Create a rectangle from the intersection between
 		// the two rectangles provided. If no intersection,
 		// returns the "zero" rectangle
-		Rectangle (Rectangle &r1, Rectangle &r2);
+		Rectangle (const Rectangle &r1, const Rectangle &r2);
 
 		Rectangle ();
 
@@ -52,24 +52,24 @@ class Rectangle
 		// The rectange is the same regardless of how it is
 		// defined; you don't actually get access to the raw
 		// values
-		inline int ylow() { return MIN(y, y + ydelta); }
-		inline int xlow() { return MIN(x, x + xdelta); }
-		inline int yhigh() { return MAX(y, y + ydelta); }
-		inline int xhigh() { return MAX(x, x + xdelta); }
+		inline int ylow() const { return MIN(y, y + ydelta); }
+		inline int xlow() const { return MIN(x, x + xdelta); }
+		inline int yhigh() const { return MAX(y, y + ydelta); }
+		inline int xhigh() const { return MAX(x, x + xdelta); }
 
-		inline int height() { return ABS(ydelta) + 1; }
-		inline int width() { return ABS(xdelta) + 1; }
+		inline int height() const { return ABS(ydelta) + 1; }
+		inline int width() const { return ABS(xdelta) + 1; }
 
-		inline int area() {return height() * width(); }
+		inline int area() const {return height() * width(); }
 
 		// Return true or false depending on whether the
 		// point or rectangle is (entirely) within *this
-		inline bool contains(std::pair<int, int> point);
-		inline bool contains(Rectangle &rect);
+		inline bool contains(const std::pair<int, int> point) const;
+		inline bool contains(const Rectangle &rect) const;
 
-		std::vector<std::pair<int, int> > * contact(Rectangle &neighbour);
+		std::vector<std::pair<int, int> > * contact(const Rectangle &neighbour);
 
-		std::vector<std::pair<int, int> > * interlock(Rectangle &neighbour);
+		std::vector<std::pair<int, int> > * interlock(const Rectangle &neighbour);
 
 		// Return a vector of all points on the perimeter of the
 		// rectangle, in an order. Must be deleted after use
@@ -109,20 +109,39 @@ class Rectangle
 		return lhs;
 	}
 
-	inline bool operator>(Rectangle& other) {
-		return this->area() > other.area();
+	inline bool operator>(const Rectangle& other) const {
+		if (this->area() > other.area())
+			return true;
+		else if (this->area() < other.area())
+			return false;
+		else if (this->ylow() > other.ylow())
+			return true;
+		else if (this->ylow() < other.ylow())
+			return false;
+		else if (this->xlow() > other.xlow())
+			return true;
+		else
+			return false;
 	}
 
-	inline bool operator<(Rectangle& other) {
-		return this->area() < other.area();
+	inline bool operator<(const Rectangle& other) const {
+		return other > *this;
 	}
 
-	inline bool operator>=(Rectangle& other) {
+	inline bool operator>=(const Rectangle& other) const {
 		return !((*this) < other);
 	}
 
-	inline bool operator<=(Rectangle& other) {
+	inline bool operator<=(const Rectangle& other) const {
 		return !((*this) > other);
+	}
+
+	inline bool operator==(const Rectangle& other) const {
+		return !((*this > other) || (*this < other));
+	}
+
+	inline bool operator!=(const Rectangle& other) const {
+		return !(*this == other);
 	}
 
 
@@ -136,7 +155,7 @@ class Rectangle
 
 }; /* -----  end of class Rectangle  ----- */
 
-bool overlap(Rectangle &r1, Rectangle &r2);
+bool overlap(const Rectangle &r1, const Rectangle &r2);
 
 
 inline bool operator==(Rectangle &lhs, Rectangle &rhs) {
@@ -146,7 +165,7 @@ inline bool operator==(Rectangle &lhs, Rectangle &rhs) {
 			(lhs.xlow() == rhs.xlow()));
 }
 
-inline bool Rectangle::contains(std::pair<int, int> point) {
+inline bool Rectangle::contains(const std::pair<int, int> point) const {
 	if (point.first > yhigh())
 		return false;
 	else if (point.first < ylow())
@@ -159,7 +178,7 @@ inline bool Rectangle::contains(std::pair<int, int> point) {
 		return true;
 }
 
-inline bool Rectangle::contains(Rectangle &rect) {
+inline bool Rectangle::contains(const Rectangle &rect) const {
 	if (rect.ylow() < this->ylow())
 		return false;
 	else if (rect.yhigh() > this->yhigh())
@@ -172,7 +191,7 @@ inline bool Rectangle::contains(Rectangle &rect) {
 		return true;
 }
 
-inline bool overlap(Rectangle &r1, Rectangle &r2) {
+inline bool overlap(const Rectangle &r1, const Rectangle &r2) {
 	if (r1.yhigh() < r2.ylow())
 		return false;
 	else if (r1.ylow() > r2.yhigh())
@@ -185,7 +204,7 @@ inline bool overlap(Rectangle &r1, Rectangle &r2) {
 		return true;
 }
 
-inline int edge_contact(Rectangle &r1, Rectangle &r2) {
+inline int edge_contact(const Rectangle &r1, const Rectangle &r2) {
 	if (r1.ylow() == r2.yhigh() + 1)
 		return MAX(0, 1 + MIN(r1.xhigh(), r2.xhigh()) - MAX(r1.xlow(), r2.xlow()));
 	else if (r1.yhigh() + 1 == r2.ylow())
@@ -198,7 +217,7 @@ inline int edge_contact(Rectangle &r1, Rectangle &r2) {
 		return 0;
 }
 
-inline int interlock(Rectangle &r1, Rectangle &r2) {
+inline int interlock(const Rectangle &r1, const Rectangle &r2) {
 	if (r1.ylow() == r2.yhigh())
 		return MAX(0, 1 + MIN(r1.xhigh(), r2.xhigh()) - MAX(r1.xlow(), r2.xlow()));
 	else if (r1.yhigh() == r2.ylow())
