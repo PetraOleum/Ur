@@ -46,47 +46,57 @@ int main() {
 
 	char ch;
 
-	updatemap(city);
+	refreshmap(city);
 
 	while ((ch = getch()) != 'q') {
 		switch (ch) {
 			case 'h':
 				displaybounds += std::make_pair(0, -5);
+				refreshmap(city);
 				break;
 			case 'l':
 				displaybounds += std::make_pair(0, 5);
+				refreshmap(city);
 				break;
 			case 'j':
 				displaybounds += std::make_pair(5, 0);
+				refreshmap(city);
 				break;
 			case 'k':
 				displaybounds += std::make_pair(-5, 0);
+				refreshmap(city);
 				break;
 			case 'y':
 				displaybounds += std::make_pair(-5, -5);
+				refreshmap(city);
 				break;
 			case 'u':
 				displaybounds += std::make_pair(-5, 5);
+				refreshmap(city);
 				break;
 			case 'b':
 				displaybounds += std::make_pair(5, -5);
+				refreshmap(city);
 				break;
 			case 'n':
 				displaybounds += std::make_pair(5, 5);
+				refreshmap(city);
 				break;
 			case ' ':
 				displaybounds = Rectangle((CITY_SIZE - LINES) / 2, (CITY_SIZE - COLS) / 2, LINES - 1, COLS - 1);
+				refreshmap(city);
 				break;
 			case 'r':
-				displaybounds = Rectangle(rand() % (CITY_SIZE - LINES), rand() % (CITY_SIZE - COLS), LINES - 1, COLS - 1);
+//				displaybounds = Rectangle(rand() % (CITY_SIZE - LINES), rand() % (CITY_SIZE - COLS), LINES - 1, COLS - 1);
+				refreshmap(city);
 				break;
 			case '.':
 				city.step();
+				updatemap(city);
 				break;
 			default:
 				break;
 		}
-		updatemap(city);
 	}
 
 	stop_curses();

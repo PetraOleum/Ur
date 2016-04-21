@@ -82,18 +82,33 @@ class City : CityHelper
 			else return objectmap[_yvalue][_xvalue];
 		}
 
-		inline Furniture& junk_at(const point& _location) {
+		inline Furniture& junk_at(const point _location) {
 			if (_location.first < 0 || _location.second < 0 || _location.first >= CITY_SIZE || _location.second >= CITY_SIZE)
 				throw std::out_of_range("Attempting to access a reference to a Furniture object outside of city limits.\n Did you mean to call City::junk_get(point)? (Would return instance of Furniture::None.)\n std::out_of_range");
 			else
 				return junk[_location];
 		}
 
-		inline Furniture junk_get(const point& _location) {
+		inline Furniture junk_get(const point _location) const {
 			if (_location.first < 0 || _location.second < 0 || _location.first >= CITY_SIZE || _location.second >= CITY_SIZE)
 				return Furniture::None;
-			else
-				return junk[_location];
+			else {
+				std::map<point, Furniture>::const_iterator it = junk.find(_location);
+				if (it == junk.end())
+					return Furniture::None;
+				else
+					return it->second;
+			}
+		}
+
+		inline void junk_set(const point _location, const Furniture _f) {
+			if (_location.first < 0 || _location.second < 0 || _location.first >= CITY_SIZE || _location.second >= CITY_SIZE)
+				return;
+			else {
+				junk[_location] = _f;
+				to_be_updated.push(_location);
+			}
+
 		}
 
 		inline std::pair<int, int> get_person(const unsigned int index) const { 
@@ -104,6 +119,17 @@ class City : CityHelper
 		}
 
 		std::queue<std::pair<int, int> > * astar(std::pair<int, int> start, std::pair<int, int> finish);
+
+		inline bool points_unprocessed() const {
+			return !to_be_updated.empty();
+		}
+
+		inline bool point_hasperson(const point _loc) const {
+			for (unsigned int i = 0; i < number_of_people(); i++)
+				if (get_person(i) == _loc)
+					return true;
+			return false;
+		}
 
 		/* ====================  MUTATORS      ======================================= */
 		
@@ -125,6 +151,20 @@ class City : CityHelper
 
 		City& operator = ( const City &other ); /* assignment operator */
 
+		inline void clear_unprocessed_points() {
+			while (!to_be_updated.empty())
+				to_be_updated.pop();
+		}
+
+		inline point pop_unprocessed_points() {
+			if (points_unprocessed()) {
+				point np = to_be_updated.front();
+				to_be_updated.pop();
+				return np;
+			} else
+				return std::make_pair(INT_MIN, INT_MIN);
+		}
+
 	protected:
 		/* ====================  DATA MEMBERS  ======================================= */
 
@@ -141,40 +181,9 @@ class City : CityHelper
 
 		std::map<point, Furniture> junk;
 
+		std::queue<point> to_be_updated;
+
 }; /* -----  end of class City  ----- */
 
-//struct CityHelper {
-//	using point = std::pair<int, int>;
-//
-//	CityHelper() {
-//
-//	}
-//
-//	CityHelper(City * _city) {
-//		city = _city;
-//	}
-//
-//	CityHelper(const CityHelper& other) {
-//		city = other.city;
-//	}
-//
-//	inline void setCity(City * _city) {
-//		city = _city;
-//	}
-//
-//	inline std::queue<point> * astar(point begin, point end) {
-//		return city->astar(begin, end);
-//	}
-//
-//	inline CityHelper& operator = (const CityHelper& other) {
-//		if (this != &other) {
-//			city = other.city;
-//		}
-//		return *this;
-//	}
-//
-//	private:
-//		City * city;
-//};
 
 #endif   /* ----- #ifndef CITY_H_INC  ----- */

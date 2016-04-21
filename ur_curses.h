@@ -28,6 +28,15 @@
 #include "city.h"
 
 Rectangle displaybounds;
+void initcolors() ;
+void start_curses() ;
+void stop_curses() ;
+void stop_curses() ;
+inline char environment_object_symbol(EnvironmentObject _ob) ;
+inline int environment_object_colour(EnvironmentObject _ob) ;
+void refreshmap(City &_city) ;
+void updatemap(City &_city) ;
+inline char furniture_char(const Furniture& _f);
 
 void initcolors() {
 	init_pair(1, COLOR_BLACK, COLOR_BLUE);
@@ -93,7 +102,8 @@ inline int environment_object_colour(EnvironmentObject _ob) {
 	return COLOR_PAIR(7);
 }
 
-void updatemap(const City &_city) {
+void refreshmap(City &_city) {
+	_city.clear_unprocessed_points();
 	displaybounds = Rectangle(displaybounds.ylow(), displaybounds.xlow(), LINES - 1, COLS - 1);
 	erase();
 	for (int y = 0; y < displaybounds.height(); y++)
@@ -101,12 +111,35 @@ void updatemap(const City &_city) {
 			EnvironmentObject objat = _city.get(y + displaybounds.ylow(), x + displaybounds.xlow());
 			attron(environment_object_colour(objat));
 			mvaddch(y, x, environment_object_symbol(objat));
+			Furniture fobj = _city.junk_get(std::make_pair(y + displaybounds.ylow(), x + displaybounds.xlow()));
+			if (fobj != Furniture::None)
+				mvaddch(y, x, furniture_char(fobj));
 		}
 	attron(PERSON_COLOUR);
 	for (unsigned int i = 0; i < _city.number_of_people(); i++) {
 		std::pair<int, int> p_pos = _city.get_person(i);
 		if (displaybounds.contains(p_pos))
 				mvaddch(p_pos.first - displaybounds.ylow(), p_pos.second - displaybounds.xlow(), PERSON_CHAR);
+	}
+	attron(COLOR_PAIR(6));
+	refresh();
+}
+
+void updatemap(City &_city) {
+	while (_city.points_unprocessed()) {
+		point pt = _city.pop_unprocessed_points();
+		if (!displaybounds.contains(pt))
+			continue;
+		EnvironmentObject eobj = _city.get(pt.first, pt.second);
+		attron(environment_object_colour(eobj));
+		mvaddch(pt.first - displaybounds.ylow(), pt.second - displaybounds.xlow(), environment_object_symbol(eobj));
+		Furniture fobj = _city.junk_get(pt);
+		if (fobj != Furniture::None)
+			mvaddch(pt.first - displaybounds.ylow(), pt.second - displaybounds.xlow(), furniture_char(fobj));
+		if (_city.point_hasperson(pt)) {
+			attron(PERSON_COLOUR);
+			mvaddch(pt.first - displaybounds.ylow(), pt.second - displaybounds.xlow(), PERSON_CHAR);
+		}
 	}
 	attron(COLOR_PAIR(6));
 	refresh();

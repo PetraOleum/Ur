@@ -329,7 +329,10 @@ void City::step() {
 		point p_current = b_current->position;
 		point p_next = b_current->propose_action();
 		EnvironmentObject nobj = get(p_next.first, p_next.second);
-		if (passible(nobj) && ABS(p_current.first - p_next.first) < 2 && ABS(p_current.second - p_next.second) < 2)
+		if (passible(nobj) && ABS(p_current.first - p_next.first) < 2 && ABS(p_current.second - p_next.second) < 2) {
 			b_current->position = p_next;
+			to_be_updated.push(p_current);
+			to_be_updated.push(p_next);
+		}
 	}
 }
