@@ -27,6 +27,7 @@
 #include "cityhelper.h"
 
 #include <queue>
+#include <map>
 
 /*
  * =====================================================================================
@@ -81,6 +82,20 @@ class City : CityHelper
 			else return objectmap[_yvalue][_xvalue];
 		}
 
+		inline Furniture& junk_at(const point& _location) {
+			if (_location.first < 0 || _location.second < 0 || _location.first >= CITY_SIZE || _location.second >= CITY_SIZE)
+				throw std::out_of_range("Attempting to access a reference to a Furniture object outside of city limits.\n Did you mean to call City::junk_get(point)? (Would return instance of Furniture::None.)\n std::out_of_range");
+			else
+				return junk[_location];
+		}
+
+		inline Furniture junk_get(const point& _location) {
+			if (_location.first < 0 || _location.second < 0 || _location.first >= CITY_SIZE || _location.second >= CITY_SIZE)
+				return Furniture::None;
+			else
+				return junk[_location];
+		}
+
 		inline std::pair<int, int> get_person(const unsigned int index) const { 
 			if (index >= number_of_people())
 				throw std::out_of_range("Attempting to access reference to non-existant Being in City.\n std::out_of_range");
@@ -123,6 +138,8 @@ class City : CityHelper
 		EnvironmentObject** objectmap;
 
 		std::vector<Being *> * people;
+
+		std::map<point, Furniture> junk;
 
 }; /* -----  end of class City  ----- */
 

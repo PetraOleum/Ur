@@ -53,6 +53,16 @@ enum class EnvironmentObject : uint8_t {
 		// Add more as they come
 };
 
+enum class Furniture : uint8_t {
+	None,
+	Table,
+	Chair,
+	Barrel,
+	Bed,
+	Dresser,
+	Basin
+};
+
 inline bool passible(const EnvironmentObject& _ob) {
 	switch (_ob) {
 		case EnvironmentObject::Nothingness:

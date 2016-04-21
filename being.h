@@ -44,6 +44,30 @@ class Being
 
 		/* ====================  ACCESSORS     ======================================= */
 
+
+		/*
+		 *--------------------------------------------------------------------------------------
+		 *       Class:  Being
+		 *      Method:  get_carrying_furnature
+		 *--------------------------------------------------------------------------------------
+		 */
+		inline Furniture get_carrying_furniture (  ) const
+		{
+			return carrying_furniture;
+		}		/* -----  end of method Being::get_carrying_furnature  ----- */
+
+		/*
+		 *--------------------------------------------------------------------------------------
+		 *       Class:  Being
+		 *      Method:  set_carrying_furnature
+		 *--------------------------------------------------------------------------------------
+		 */
+		inline void set_carrying_furniture ( Furniture value )
+		{
+			carrying_furniture	= value;
+			return ;
+		}		/* -----  end of method Being::set_carrying_furnature  ----- */
+		
 		/* ====================  MUTATORS      ======================================= */
 
 		std::pair<int, int> propose_action();
@@ -62,6 +86,8 @@ class Being
 		/* ====================  DATA MEMBERS  ======================================= */
 
 		std::queue<std::pair<int, int> > * planned_path;
+
+		Furniture carrying_furniture;
 
 }; /* -----  end of class Being  ----- */
 

@@ -112,6 +112,25 @@ void updatemap(const City &_city) {
 	refresh();
 }
 
+inline char furniture_char(const Furniture& _f) {
+	switch (_f) {
+		case Furniture::None:
+			return ' ';
+		case Furniture::Bed:
+			return 'B';
+		case Furniture::Dresser:
+			return 'A';
+		case Furniture::Table:
+			return 'T';
+		case Furniture::Barrel:
+			return '%';
+		case Furniture::Chair:
+			return 'h';
+		case Furniture::Basin:
+			return 'U';
+	}
+}
+
 
 
 #endif   /* ----- #ifndef UR_CURSES_INC  ----- */
