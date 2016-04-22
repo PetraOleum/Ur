@@ -103,9 +103,26 @@ std::pair<int, int> Being::propose_action() {
 	using point = std::pair<int, int>;
 	if (planned_path->empty()) {
 		delete planned_path;
-		point dest = std::make_pair(rand() % 10 - rand() % 10 + position.first, rand() % 10 - rand() % 10 + position.second);
+		point dest;
+		if (carrying_furniture != Furniture::None) {
+			if (helper->drop(position, carrying_furniture)) {
+				carrying_furniture = Furniture::None;
+				dest = helper->find_nearest(position, [](EnvironmentObject _obj, Furniture _f) { return (_obj != EnvironmentObject::Floor) && (_f != Furniture::None);});
+			} else {
+				dest = helper->find_nearest(position, [](EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None);});
+			}
+		} else {
+			carrying_furniture = helper->pickup(position);
+			if (carrying_furniture == Furniture::None)
+				dest = helper->find_nearest(position, [](EnvironmentObject _obj, Furniture _f) { return (_obj != EnvironmentObject::Floor) && (_f != Furniture::None);});
+			else
+				dest = helper->find_nearest(position, [](EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None);});
+		}
+		if (dest == position)
+			dest = std::make_pair(rand() % 10 - rand() % 10 + position.first, rand() % 10 - rand() % 10 + position.second);
 		planned_path = pathto(dest);
-		return std::make_pair(-1, -1);
+		if (planned_path->empty())
+			return std::make_pair(-1, -1);
 	}
 	point next = planned_path->front();
 	if (ABS(position.first - next.first) > 1 || ABS(position.second - next.second) > 1) {

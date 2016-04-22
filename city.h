@@ -120,6 +120,8 @@ class City : CityHelper
 
 		std::queue<std::pair<int, int> > * astar(std::pair<int, int> start, std::pair<int, int> finish);
 
+		point find_nearest(point, std::function<bool(EnvironmentObject, Furniture)>);
+
 		inline bool points_unprocessed() const {
 			return !to_be_updated.empty();
 		}
@@ -146,6 +148,10 @@ class City : CityHelper
 		}
 
 		void step();
+
+		Furniture pickup(point _pt);
+
+		bool drop(point _pt, Furniture _f);
 
 		/* ====================  OPERATORS     ======================================= */
 

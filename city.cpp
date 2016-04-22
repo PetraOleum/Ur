@@ -336,3 +336,62 @@ void City::step() {
 		}
 	}
 }
+
+point City::find_nearest(point start, std::function<bool(EnvironmentObject, Furniture)> valid_location) {
+	std::priority_queue<std::pair<int, point>, std::vector<std::pair<int, point> >, std::greater<std::pair<int, point> > > fronteir;
+	fronteir.push(std::make_pair(0, start));
+	std::map<point, point> came_from;
+	came_from[start] = start;
+	std::map<point, int> cost_so_far;
+	cost_so_far[start] = 0;
+	while (!fronteir.empty()) {
+		std::pair<int, point> current_state = fronteir.top();
+		point current = current_state.second;
+		EnvironmentObject currentobj = get(current.first, current.second);
+		Furniture _f = junk_get(current);
+		if (valid_location(currentobj, _f))
+			return current;
+		int current_cost = current_state.first;
+		fronteir.pop();
+		for (int yd = -1; yd < 2; yd++)
+			for (int xd = -1; xd < 2; xd++) {
+				if (xd == 0 && yd == 0)
+					continue;
+				point next = std::make_pair(current.first + yd, current.second + xd);
+				EnvironmentObject nob = get(next.first, next.second);
+				if (!passible(nob))
+					continue;
+				int new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? 1 : 0);
+				if (cost_so_far.find(next) == cost_so_far.end()) {
+					fronteir.push(std::make_pair(new_cost, next));
+					came_from[next] = current;
+					cost_so_far[next] = new_cost;
+				} else if(cost_so_far[next] > new_cost) {
+					fronteir.push(std::make_pair(new_cost, next));
+					came_from[next] = current;
+					cost_so_far[next] = new_cost;
+				}
+			}
+	}
+	return start;
+}
+
+Furniture City::pickup(point _pt) {
+	Furniture f_at = junk_at(_pt);
+	if (f_at == Furniture::None) {
+		return Furniture::None;
+	} else {
+		junk_set(_pt, Furniture::None);
+		to_be_updated.push(_pt);
+		return f_at;
+	}
+}
+
+bool City::drop(point _pt, Furniture _f) {
+	if (junk_at(_pt) == Furniture::None) {
+		to_be_updated.push(_pt);
+		junk_set(_pt, _f);
+		return true;
+	}
+	return false;
+}

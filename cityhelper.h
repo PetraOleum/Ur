@@ -21,12 +21,17 @@
 
 #include <queue>
 #include <utility>
+#include <functional>
+#include "ur_common.h"
 
 using point = std::pair<int, int>;
 
 class CityHelper {
 	public:
 		virtual std::queue<point> * astar(point, point) = 0;
+		virtual point find_nearest(point, std::function<bool(EnvironmentObject, Furniture)>) = 0;
+		virtual Furniture pickup(point) = 0;
+		virtual bool drop(point, Furniture) = 0;
 };
 
 #endif

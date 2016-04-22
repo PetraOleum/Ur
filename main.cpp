@@ -42,7 +42,43 @@ int main() {
 	for (int i = 0; i < 1000; i++)
 		city.add_building(Building::Hovel);
 
-	city.add_people(100);
+	city.add_people(10);
+
+	for (int i = 0; i < 500; i++) {
+		point pt;
+		do {
+			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+		city.junk_set(pt, Furniture::Barrel);
+	}
+	for (int i = 0; i < 500; i++) {
+		point pt;
+		do {
+			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+		city.junk_set(pt, Furniture::Bed);
+	}
+	for (int i = 0; i < 500; i++) {
+		point pt;
+		do {
+			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+		city.junk_set(pt, Furniture::Table);
+	}
+	for (int i = 0; i < 500; i++) {
+		point pt;
+		do {
+			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+		city.junk_set(pt, Furniture::Chair);
+	}
+	for (int i = 0; i < 500; i++) {
+		point pt;
+		do {
+			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+		city.junk_set(pt, Furniture::Basin);
+	}
 
 	char ch;
 
