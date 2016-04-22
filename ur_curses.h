@@ -162,6 +162,7 @@ inline char furniture_char(const Furniture& _f) {
 		case Furniture::Basin:
 			return 'U';
 	}
+	return 'X';
 }
 
 
