@@ -262,18 +262,18 @@ std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::p
 	std::queue<point > * path = new std::queue<point>;
 	if (!passible(get(start.first, start.second)) || !passible(get(finish.first, finish.second)))
 		return path;
-	std::priority_queue<std::pair<int, point >, std::vector<std::pair<int, point > >, std::greater<std::pair<int, point > > > fronteir;
+	std::priority_queue<std::pair<movement_cost_t, point >, std::vector<std::pair<movement_cost_t, point > >, std::greater<std::pair<movement_cost_t, point > > > fronteir;
 	fronteir.push(std::make_pair(0, start));
 	std::map<point, point> came_from;
 	came_from[start] = start;
-	std::map<point, int> cost_so_far;
+	std::map<point, movement_cost_t> cost_so_far;
 	cost_so_far[start] = 0;
 	bool success = false;
 	while (!fronteir.empty()) {
-		std::pair<int, point> current_state = fronteir.top();
+		std::pair<movement_cost_t, point> current_state = fronteir.top();
 		point current = current_state.second;
 //		EnvironmentObject currentobj = get(current.first, current.second);
-		int current_cost = current_state.first;
+		movement_cost_t current_cost = current_state.first;
 		if (current == finish) {
 			success = true;
 			break;
@@ -287,7 +287,7 @@ std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::p
 				EnvironmentObject nob = get(next.first, next.second);
 				if (!passible(nob))
 					continue;
-				int new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? 1 : 0);
+				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST : 0);
 				if (cost_so_far.find(next) == cost_so_far.end()) {
 					fronteir.push(std::make_pair(new_cost, next));
 					came_from[next] = current;
@@ -338,20 +338,20 @@ void City::step() {
 }
 
 point City::find_nearest(point start, std::function<bool(EnvironmentObject, Furniture)> valid_location) {
-	std::priority_queue<std::pair<int, point>, std::vector<std::pair<int, point> >, std::greater<std::pair<int, point> > > fronteir;
+	std::priority_queue<std::pair<movement_cost_t, point>, std::vector<std::pair<movement_cost_t, point> >, std::greater<std::pair<movement_cost_t, point> > > fronteir;
 	fronteir.push(std::make_pair(0, start));
 	std::map<point, point> came_from;
 	came_from[start] = start;
-	std::map<point, int> cost_so_far;
+	std::map<point, movement_cost_t> cost_so_far;
 	cost_so_far[start] = 0;
 	while (!fronteir.empty()) {
-		std::pair<int, point> current_state = fronteir.top();
+		std::pair<movement_cost_t, point> current_state = fronteir.top();
 		point current = current_state.second;
 		EnvironmentObject currentobj = get(current.first, current.second);
 		Furniture _f = junk_get(current);
 		if (valid_location(currentobj, _f))
 			return current;
-		int current_cost = current_state.first;
+		movement_cost_t current_cost = current_state.first;
 		fronteir.pop();
 		for (int yd = -1; yd < 2; yd++)
 			for (int xd = -1; xd < 2; xd++) {
@@ -361,7 +361,7 @@ point City::find_nearest(point start, std::function<bool(EnvironmentObject, Furn
 				EnvironmentObject nob = get(next.first, next.second);
 				if (!passible(nob))
 					continue;
-				int new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? 1 : 0);
+				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST  : 0);
 				if (cost_so_far.find(next) == cost_so_far.end()) {
 					fronteir.push(std::make_pair(new_cost, next));
 					came_from[next] = current;

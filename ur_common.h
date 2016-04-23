@@ -21,11 +21,13 @@
 
 #include <cstdint>
 #include <climits>
+#include <stdexcept>
 
 #define ABS(A) ((A > 0) ? (A) : (-(A)))
 #define SIGN(A) ((A > 0) ? (1) : ((A < 0) ? (-1) : 0))
 #define MIN(A, B) ((A > B) ? (B) : (A))
 #define MAX(A, B) ((A > B) ? (A) : (B))
+#define DIAGONAL_COST 0.4142
 
 //#define CITY_SIZE 1000 // We'll try a 1000x1000 city first off
 
@@ -77,10 +79,14 @@ inline bool passible(const EnvironmentObject& _ob) {
 			return false;
 		case EnvironmentObject::Door:
 			return true;
+		default:
+			throw std::out_of_range("Attempting to access the passibility of an invalid EnvironmentObject. std::out_of_range");
 	}
 }
 
-inline int movement_cost(const EnvironmentObject& _ob) {
+using movement_cost_t = double;
+
+inline movement_cost_t movement_cost(const EnvironmentObject& _ob) {
 	switch (_ob) {
 		case EnvironmentObject::Nothingness:
 			return INT_MAX;
@@ -89,11 +95,13 @@ inline int movement_cost(const EnvironmentObject& _ob) {
 		case EnvironmentObject::Floor:
 			return 1;
 		case EnvironmentObject::OutsideWall:
-			return INT_MAX;
+			return 10000;
 		case EnvironmentObject::InsideWall:
-			return INT_MAX;
+			return 10000;
 		case EnvironmentObject::Door:
-			return 2;
+			return 1.5;
+		default:
+			throw std::out_of_range("Attempting to access the movement cost of an invalid EnvironmentObject. std::out_of_range");
 	}
 
 }

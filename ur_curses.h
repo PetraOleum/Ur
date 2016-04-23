@@ -22,6 +22,7 @@
 #define PERSON_CHAR '@'
 #define PERSON_COLOUR COLOR_PAIR(11)
 
+
 #include <ncurses.h>
 #include "ur_common.h"
 #include "rectangle.h"
