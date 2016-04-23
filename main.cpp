@@ -20,13 +20,13 @@ int main() {
 
 	while (!city.add_building(Building::Palace)) ;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 40; i++)
 		city.add_building(Building::Mansion);
 
-	for (int i = 0; i < 350; i++)
+	for (int i = 0; i < 200; i++)
 		city.add_building(Building::Cottage);
 
-	for (int i = 0; i < 80; i++)
+	for (int i = 0; i < 150; i++)
 		city.add_building(Building::Apartment);
 
 	for (int i = 0; i < 80; i++)
@@ -38,40 +38,40 @@ int main() {
 	for (int i = 0; i < 30; i++)
 		city.add_building(Building::Tavern);
 
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 200; i++)
 		city.add_building(Building::Hovel);
 
-	city.add_people(30);
+	city.add_people(200);
 
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 300; i++) {
 		point pt;
 		do {
 			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
 		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
 		city.junk_set(pt, Furniture::Barrel);
 	}
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 300; i++) {
 		point pt;
 		do {
 			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
 		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
 		city.junk_set(pt, Furniture::Bed);
 	}
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 300; i++) {
 		point pt;
 		do {
 			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
 		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
 		city.junk_set(pt, Furniture::Table);
 	}
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 300; i++) {
 		point pt;
 		do {
 			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
 		} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
 		city.junk_set(pt, Furniture::Chair);
 	}
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 300; i++) {
 		point pt;
 		do {
 			pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
@@ -135,6 +135,7 @@ int main() {
 
 				}
 				break;
+			case ERR:
 			case '.':
 				city.step();
 				updatemap(city);
