@@ -15,7 +15,6 @@ void initcolors();
 int main() {
 	srand(time(NULL));
 
-	start_curses();
 
 	City city;
 
@@ -82,7 +81,9 @@ int main() {
 
 	char ch;
 
+	start_curses();
 	refreshmap(city);
+
 
 	while ((ch = getch()) != 'q') {
 		switch (ch) {
@@ -125,6 +126,14 @@ int main() {
 			case 'r':
 //				displaybounds = Rectangle(rand() % (CITY_SIZE - LINES), rand() % (CITY_SIZE - COLS), LINES - 1, COLS - 1);
 				refreshmap(city);
+				break;
+			case 'f':
+				{
+					unsigned int rselect = rand() % city.number_of_people();
+					displaybounds = Rectangle(city.get_person(rselect).first - LINES / 2, city.get_person(rselect).second - COLS / 2, LINES - 1, COLS - 1);
+					refreshmap(city);
+
+				}
 				break;
 			case '.':
 				city.step();

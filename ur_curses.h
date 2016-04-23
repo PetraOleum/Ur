@@ -28,6 +28,8 @@
 #include "city.h"
 
 Rectangle displaybounds;
+bool curses_running = false;
+
 void initcolors() ;
 void start_curses() ;
 void stop_curses() ;
@@ -53,6 +55,8 @@ void initcolors() {
 }
 
 void start_curses() {
+	if (curses_running)
+		return;
 	initscr();
 	start_color();
 	initcolors();
@@ -60,10 +64,13 @@ void start_curses() {
 	noecho();
 	curs_set(0);
 	displaybounds = Rectangle((CITY_SIZE - LINES) / 2, (CITY_SIZE - COLS) / 2, LINES - 1, COLS - 1);
+	curses_running = true;
 }
 
 void stop_curses() {
-	endwin();
+	if (curses_running)
+		endwin();
+	curses_running = false;
 }
 
 inline char environment_object_symbol(EnvironmentObject _ob) {
@@ -161,8 +168,9 @@ inline char furniture_char(const Furniture& _f) {
 			return 'h';
 		case Furniture::Basin:
 			return 'U';
+		default:
+			throw std::out_of_range("furniture_char() given invalid furniture object. std::out_of_range");
 	}
-	return 'X';
 }
 
 

@@ -141,9 +141,10 @@ class City : CityHelper
 			for (int i = 0; i < number; i++) {
 				Being * _bn = new Being(this);
 				do {
-					_bn->position = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
-				} while (!passible(get(_bn->position.first, _bn->position.second)));
+					_bn->set_init_position(std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE));
+				} while (get(_bn->position.first, _bn->position.second) != EnvironmentObject::Floor);
 				people->push_back(_bn);
+
 			}
 		}
 
