@@ -120,7 +120,9 @@ class City : CityHelper
 
 		std::queue<std::pair<int, int> > * astar(std::pair<int, int> start, std::pair<int, int> finish);
 
-		point find_nearest(point, std::function<bool(EnvironmentObject, Furniture)>);
+		point find_nearest(point, std::function<bool(point, EnvironmentObject, Furniture)>);
+
+		std::set<point> * contig(point, std::function<bool(EnvironmentObject)>);
 
 		inline bool points_unprocessed() const {
 			return !to_be_updated.empty();

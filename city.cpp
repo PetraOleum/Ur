@@ -337,7 +337,7 @@ void City::step() {
 	}
 }
 
-point City::find_nearest(point start, std::function<bool(EnvironmentObject, Furniture)> valid_location) {
+point City::find_nearest(point start, std::function<bool(point, EnvironmentObject, Furniture)> valid_location) {
 	std::priority_queue<std::pair<movement_cost_t, point>, std::vector<std::pair<movement_cost_t, point> >, std::greater<std::pair<movement_cost_t, point> > > fronteir;
 	fronteir.push(std::make_pair(0, start));
 	std::map<point, point> came_from;
@@ -349,7 +349,7 @@ point City::find_nearest(point start, std::function<bool(EnvironmentObject, Furn
 		point current = current_state.second;
 		EnvironmentObject currentobj = get(current.first, current.second);
 		Furniture _f = junk_get(current);
-		if (valid_location(currentobj, _f))
+		if (valid_location(current, currentobj, _f))
 			return current;
 		movement_cost_t current_cost = current_state.first;
 		fronteir.pop();
@@ -394,4 +394,36 @@ bool City::drop(point _pt, Furniture _f) {
 		return true;
 	}
 	return false;
+}
+
+std::set<point> * City::contig(point anchor, std::function<bool(EnvironmentObject)> criterion) {
+	std::set<point> * _contig = new std::set<point>;
+	if (!criterion(get(anchor.first, anchor.second)))
+		return _contig;
+	std::queue<point> fronteir;
+	fronteir.push(anchor);
+	std::set<point> checked;
+	checked.insert(anchor);
+
+	while (!fronteir.empty()) {
+		point current = fronteir.front();
+		fronteir.pop();
+		EnvironmentObject eob = get(current.first, current.second);
+		if (!criterion(eob) || eob == EnvironmentObject::Nothingness)
+			continue;
+		else {
+			_contig->insert(current);
+			for (int yd = -1; yd < 2; yd++)
+				for (int xd = -1; xd < 2; xd++) {
+					if (xd == 0 && yd == 0)
+						continue;
+					point next = std::make_pair(current.first + yd, current.second + xd);
+					if (checked.find(next) == checked.end()) {
+						fronteir.push(next);
+						checked.insert(next);
+					}
+				}
+		}
+	}
+	return _contig;
 }

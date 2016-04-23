@@ -95,6 +95,8 @@ class Being
 
 		point initialposition;
 
+		std::set<point> * home;
+
 }; /* -----  end of class Being  ----- */
 
 #endif   /* ----- #ifndef BEING_INC  ----- */
