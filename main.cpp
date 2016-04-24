@@ -127,6 +127,37 @@ int main() {
 //				displaybounds = Rectangle(rand() % (CITY_SIZE - LINES), rand() % (CITY_SIZE - COLS), LINES - 1, COLS - 1);
 				refreshmap(city);
 				break;
+			case 'a':
+				for (unsigned int i = 0; i < 10; i++){
+					point pt;
+					do {
+						pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+					} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+					city.junk_set(pt, Furniture::Barrel);
+					do {
+						pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+					} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+					city.junk_set(pt, Furniture::Chair);
+					do {
+						pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+					} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+					city.junk_set(pt, Furniture::Dresser);
+					do {
+						pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+					} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+					city.junk_set(pt, Furniture::Table);
+					do {
+						pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+					} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+					city.junk_set(pt, Furniture::Bed);
+					do {
+						pt = std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE);
+					} while (city.get(pt.first, pt.second) != EnvironmentObject::OpenGround || city.junk_get(pt) != Furniture::None);
+					city.junk_set(pt, Furniture::Basin);
+					updatemap(city);
+				}
+
+				break;
 			case 'f':
 				{
 					unsigned int rselect = rand() % city.number_of_people();
