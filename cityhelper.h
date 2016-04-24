@@ -34,6 +34,7 @@ class CityHelper {
 		virtual Furniture pickup(point) = 0;
 		virtual bool drop(point, Furniture) = 0;
 		virtual std::set<point> * contig(point, std::function<bool(EnvironmentObject)>) = 0;
+		virtual bool containsvalid(std::set<point> *, std::function<bool(EnvironmentObject, Furniture)>) = 0;
 };
 
 #endif

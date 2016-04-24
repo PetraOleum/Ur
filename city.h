@@ -124,6 +124,8 @@ class City : CityHelper
 
 		std::set<point> * contig(point, std::function<bool(EnvironmentObject)>);
 
+		bool containsvalid(std::set<point> * area, std::function<bool(EnvironmentObject, Furniture)> criterion);
+
 		inline bool points_unprocessed() const {
 			return !to_be_updated.empty();
 		}
