@@ -138,6 +138,12 @@ std::pair<int, int> Being::propose_action() {
 				dest = helper->find_nearest(position, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj != EnvironmentObject::Nothingness) && (_f != Furniture::None) && (home->find(_p) == home->end());});
 			} else if (helper->containsvalid(home, [](EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None);})){
 				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_pt) != home->end());});
+			} else {
+				point newaddition = helper->find_nearest(initialposition, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_p) == home->end()); });
+				std::set<point> * nadd = helper->contig(newaddition, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
+				home->insert(nadd->begin(), nadd->end());
+				delete nadd;
+				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return _obj == EnvironmentObject::Floor && _f == Furniture::None && (home->find(_pt) != home->end());});
 			}
 		} else {
 			carrying_furniture = helper->pickup(position);
@@ -145,15 +151,16 @@ std::pair<int, int> Being::propose_action() {
 				dest = helper->find_nearest(position, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj != EnvironmentObject::Nothingness) && (_f != Furniture::None) && (home->find(_p) == home->end());});
 			else if (helper->containsvalid(home, [](EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None);}))
 				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_pt) != home->end());});
+			else {
+				point newaddition = helper->find_nearest(initialposition, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_p) == home->end()); });
+				std::set<point> * nadd = helper->contig(newaddition, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
+				home->insert(nadd->begin(), nadd->end());
+				delete nadd;
+				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return _obj == EnvironmentObject::Floor && _f == Furniture::None && (home->find(_pt) != home->end());});
+			}
 		}
-		if (dest == position) {
-			point newaddition = helper->find_nearest(initialposition, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_p) == home->end()); });
-			std::set<point> * nadd = helper->contig(newaddition, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
-			home->insert(nadd->begin(), nadd->end());
-			delete nadd;
-			dest = helper->find_nearest(position, [](point _pt, EnvironmentObject _obj, Furniture _f) { return _obj == EnvironmentObject::Floor && _f == Furniture::None;});
-		}
-//			dest = std::make_pair(rand() % 10 - rand() % 10 + position.first, rand() % 10 - rand() % 10 + position.second);
+		if (dest == position) 
+			dest = std::make_pair(rand() % 10 - rand() % 10 + position.first, rand() % 10 - rand() % 10 + position.second);
 
 		planned_path = pathto(dest);
 		if (planned_path->empty())
