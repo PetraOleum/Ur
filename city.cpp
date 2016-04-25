@@ -90,6 +90,8 @@ City::~City ()
 	for (unsigned int i = 0; i < number_of_people(); i++)
 		delete people->at(i);
 	delete people;
+	delete bmap;
+	delete bpoints;
 }  /* -----  end of method City::~City  (destructor)  ----- */
 
 /*
@@ -274,7 +276,7 @@ bool City::add_building(Building building_type) {
 std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::pair<int, int> finish) {
 	using point = std::pair<int, int>;
 	std::queue<point > * path = new std::queue<point>;
-	if (!passible(get(start.first, start.second)) || !passible(get(finish.first, finish.second)))
+	if (!passible(get(start.first, start.second)) || !passible(get(finish.first, finish.second)) || point_hasperson(finish))
 		return path;
 	std::priority_queue<std::pair<movement_cost_t, point >, std::vector<std::pair<movement_cost_t, point > >, std::greater<std::pair<movement_cost_t, point > > > fronteir;
 	fronteir.push(std::make_pair(0, start));
