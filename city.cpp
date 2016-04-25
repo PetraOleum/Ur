@@ -378,7 +378,7 @@ point City::find_nearest(point start, std::function<bool(point, EnvironmentObjec
 					continue;
 				point next = std::make_pair(current.first + yd, current.second + xd);
 				EnvironmentObject nob = get(next.first, next.second);
-				if (!passible(nob))
+				if (!passible(nob) || point_hasperson(next))
 					continue;
 				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST  : 0);
 				if (cost_so_far.find(next) == cost_so_far.end()) {
