@@ -111,7 +111,7 @@ class City : CityHelper
 
 		}
 
-		inline std::pair<int, int> get_person(const unsigned int index) const { 
+		inline std::pair<int, int> get_person(unsigned int index) const { 
 			if (index >= number_of_people())
 				throw std::out_of_range("Attempting to access reference to non-existant Being in City.\n std::out_of_range");
 			else
@@ -130,11 +130,18 @@ class City : CityHelper
 			return !to_be_updated.empty();
 		}
 
-		inline bool point_hasperson(const point _loc) const {
-			for (unsigned int i = 0; i < number_of_people(); i++)
-				if (get_person(i) == _loc)
-					return true;
-			return false;
+		inline bool point_hasperson(point _loc) const {
+//			for (unsigned int i = 0; i < number_of_people(); i++)
+//				if (get_person(i) == _loc)
+//					return true;
+//			return false;
+			auto it = bmap->find(_loc);
+			if (it == bmap->end())
+				return false;
+			else if (bmap->at(_loc) == 0)
+				return false;
+			else
+				return true;
 		}
 
 		/* ====================  MUTATORS      ======================================= */
@@ -146,9 +153,10 @@ class City : CityHelper
 				Being * _bn = new Being(this);
 				do {
 					_bn->set_init_position(std::make_pair(rand() % CITY_SIZE, rand() % CITY_SIZE));
-				} while (get(_bn->position.first, _bn->position.second) != EnvironmentObject::Floor);
+				} while (get(_bn->position.first, _bn->position.second) != EnvironmentObject::Floor && !point_hasperson(_bn->position));
 				people->push_back(_bn);
-
+				(*bpoints)[_bn] = _bn->position;
+				(*bmap)[_bn->position] = _bn;
 			}
 		}
 
@@ -189,6 +197,10 @@ class City : CityHelper
 		EnvironmentObject** objectmap;
 
 		std::vector<Being *> * people;
+
+		std::map<point, Being *> * bmap;
+
+		std::map<Being *, point> * bpoints;
 
 		std::map<point, Furniture> junk;
 

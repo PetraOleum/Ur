@@ -36,6 +36,8 @@ City::City ()
 			objectmap[y][x] = EnvironmentObject::OpenGround;
 	}
 	people = new std::vector<Being *>;
+	bmap = new std::map<point, Being *>;
+	bpoints = new std::map<Being *, point>;
 }  /* -----  end of method City::City  (constructor)  ----- */
 
 /*
@@ -60,8 +62,13 @@ City::City ( const City &other )
 			objectmap[y][x] = other.objectmap[y][x];
 	}
 	people = new std::vector<Being *>;
+	bmap = new std::map<point, Being *>;
+	bpoints = new std::map<Being *, point>;
 	for (unsigned int i = 0; i < other.number_of_people(); i++) {
 		Being * bn = new Being(*(other.people->at(i)));
+		point bnp = (*other.bpoints)[bn];
+		(*bpoints)[bn] = bnp;
+		(*bmap)[bnp] = bn;
 		people->push_back(bn);
 	}
 	
@@ -111,9 +118,16 @@ City::operator = ( const City &other )
 		for (unsigned int i = 0; i < number_of_people(); i++)
 			delete people->at(i);
 		delete people;
+		delete bmap;
+		delete bpoints;
 		people = new std::vector<Being *>;
+		bmap = new std::map<point, Being *>;
+		bpoints = new std::map<Being *, point>;
 		for (unsigned int i = 0; i < other.number_of_people(); i++) {
 			Being * bn = new Being(*(other.people->at(i)));
+			point bnp = (*other.bpoints)[bn];
+			(*bpoints)[bn] = bnp;
+			(*bmap)[bnp] = bn;
 			people->push_back(bn);
 		}
 	}
@@ -285,7 +299,7 @@ std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::p
 					continue;
 				point next = std::make_pair(current.first + yd, current.second + xd);
 				EnvironmentObject nob = get(next.first, next.second);
-				if (!passible(nob))
+				if (!passible(nob) || point_hasperson(next))
 					continue;
 				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST : 0);
 				if (cost_so_far.find(next) == cost_so_far.end()) {
@@ -326,11 +340,14 @@ void City::step() {
 	using point = std::pair<int, int>;
 	for (unsigned int i = 0; i < number_of_people(); i++) {
 		Being * b_current = people->at(i);
-		point p_current = b_current->position;
+		point p_current = (*bpoints)[b_current];
 		point p_next = b_current->propose_action();
 		EnvironmentObject nobj = get(p_next.first, p_next.second);
-		if (passible(nobj) && ABS(p_current.first - p_next.first) < 2 && ABS(p_current.second - p_next.second) < 2) {
+		if (passible(nobj) && ABS(p_current.first - p_next.first) < 2 && ABS(p_current.second - p_next.second) < 2 && !point_hasperson(p_next)) {
 			b_current->position = p_next;
+			(*bpoints)[b_current] = p_next;
+			(*bmap)[p_current] = 0;
+			(*bmap)[p_next] = b_current;
 			to_be_updated.push(p_current);
 			to_be_updated.push(p_next);
 		}
