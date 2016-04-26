@@ -131,10 +131,6 @@ class City : CityHelper
 		}
 
 		inline bool point_hasperson(point _loc) const {
-//			for (unsigned int i = 0; i < number_of_people(); i++)
-//				if (get_person(i) == _loc)
-//					return true;
-//			return false;
 			auto it = bmap->find(_loc);
 			if (it == bmap->end())
 				return false;
@@ -161,6 +157,8 @@ class City : CityHelper
 		}
 
 		void step();
+
+		bool propose_action(point start, point end);
 
 		Furniture pickup(point _pt);
 
@@ -200,7 +198,7 @@ class City : CityHelper
 
 		std::map<point, Being *> * bmap;
 
-		std::map<Being *, point> * bpoints;
+		std::map<Being *, beingmeta_t> * bpoints;
 
 		std::map<point, Furniture> junk;
 

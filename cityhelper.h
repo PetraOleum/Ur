@@ -25,7 +25,6 @@
 #include <functional>
 #include "ur_common.h"
 
-using point = std::pair<int, int>;
 
 class CityHelper {
 	public:
@@ -36,6 +35,7 @@ class CityHelper {
 		virtual std::set<point> * contig(point, std::function<bool(EnvironmentObject)>) = 0;
 		virtual bool containsvalid(std::set<point> *, std::function<bool(EnvironmentObject, Furniture)>) = 0;
 		virtual bool point_hasperson(point) const = 0;
+		virtual bool propose_action(point start, point end) = 0;
 };
 
 #endif

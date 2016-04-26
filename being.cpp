@@ -33,7 +33,7 @@ Being::Being (CityHelper * _helper)
 	planned_path = new std::queue<std::pair<int, int> >;
 	home = new std::set<point>;
 	carrying_furniture = Furniture::None;
-
+	failed_action = false;
 }  /* -----  end of method Being::Being  (constructor)  ----- */
 
 /*
@@ -67,6 +67,7 @@ Being::Being ( const Being &other )
 		home->insert(other.home->begin(), other.home->end());
 	}
 	carrying_furniture = other.carrying_furniture;
+	failed_action = other.failed_action;
 }  /* -----  end of method Being::Being  (copy constructor)  ----- */
 
 /*
@@ -116,11 +117,12 @@ Being::operator = ( const Being &other )
 			home->insert(other.home->begin(), other.home->end());
 		}
 		carrying_furniture = other.carrying_furniture;
+		failed_action = other.failed_action;
 	}
 	return *this;
 }  /* -----  end of method Being::operator =  (assignment operator)  ----- */
 
-std::pair<int, int> Being::propose_action() {
+void Being::act() {
 	using point = std::pair<int, int>;
 	if (home->empty()) {
 		delete home;
@@ -166,14 +168,21 @@ std::pair<int, int> Being::propose_action() {
 
 		planned_path = pathto(dest);
 		if (planned_path->empty())
-			return std::make_pair(-1, -1);
+			return;
 	}
 	point next = planned_path->front();
-	if (ABS(position.first - next.first) > 1 || ABS(position.second - next.second) > 1) {
+//	if (ABS(position.first - next.first) > 1 || ABS(position.second - next.second) > 1) {
+//		while (!planned_path->empty())
+//			planned_path->pop();
+//		return std::make_pair(-1, -1);
+//	}
+	bool action_worked = helper->propose_action(position, next);
+	if (action_worked) {
+		failed_action = false;
+		planned_path->pop();
+	} else if (failed_action) {
 		while (!planned_path->empty())
 			planned_path->pop();
-		return std::make_pair(-1, -1);
-	}
-	planned_path->pop();
-	return next;
+	} else
+		failed_action = true;
 }

@@ -74,7 +74,7 @@ class Being
 			position = initialposition = _pos;
 		}
 
-		std::pair<int, int> propose_action();
+		void act();
 
 		/* ====================  OPERATORS     ======================================= */
 
@@ -96,6 +96,8 @@ class Being
 		point initialposition;
 
 		std::set<point> * home;
+
+		bool failed_action;
 
 }; /* -----  end of class Being  ----- */
 

@@ -33,6 +33,9 @@
 
 #define CITY_SIZE 500
 
+using point = std::pair<int, int>;
+using movement_cost_t = double;
+
 enum class Building {
 	None,
 	Hovel,
@@ -84,8 +87,6 @@ inline bool passible(const EnvironmentObject& _ob) {
 	}
 }
 
-using movement_cost_t = double;
-
 inline movement_cost_t movement_cost(const EnvironmentObject& _ob) {
 	switch (_ob) {
 		case EnvironmentObject::Nothingness:
@@ -105,4 +106,38 @@ inline movement_cost_t movement_cost(const EnvironmentObject& _ob) {
 	}
 
 }
+
+struct beingmeta_t {
+		point position;
+		movement_cost_t movement_left;
+
+		beingmeta_t() {
+			position = std::make_pair(0, 0);
+			movement_left = 0;
+		}
+
+		beingmeta_t(point _loc) {
+			position = _loc;
+			movement_left = 0;
+		}
+
+		beingmeta_t(point _loc, movement_cost_t mp) {
+			position = _loc;
+			movement_left = mp;
+		}
+
+		beingmeta_t(const beingmeta_t &other) {
+			position = other.position;
+			movement_left = other.movement_left;
+		}
+
+		inline beingmeta_t& operator = (const beingmeta_t &other) {
+			if (this != &other) {
+				position = other.position;
+				movement_left = other.movement_left;
+			}
+			return *this;
+		}
+};
+
 #endif   /* ----- #ifndef UR_COMMON_INC  ----- */

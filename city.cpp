@@ -37,7 +37,7 @@ City::City ()
 	}
 	people = new std::vector<Being *>;
 	bmap = new std::map<point, Being *>;
-	bpoints = new std::map<Being *, point>;
+	bpoints = new std::map<Being *, beingmeta_t>;
 }  /* -----  end of method City::City  (constructor)  ----- */
 
 /*
@@ -63,12 +63,12 @@ City::City ( const City &other )
 	}
 	people = new std::vector<Being *>;
 	bmap = new std::map<point, Being *>;
-	bpoints = new std::map<Being *, point>;
+	bpoints = new std::map<Being *, beingmeta_t>;
 	for (unsigned int i = 0; i < other.number_of_people(); i++) {
 		Being * bn = new Being(*(other.people->at(i)));
-		point bnp = (*other.bpoints)[bn];
+		beingmeta_t bnp = (*other.bpoints)[bn];
 		(*bpoints)[bn] = bnp;
-		(*bmap)[bnp] = bn;
+		(*bmap)[bnp.position] = bn;
 		people->push_back(bn);
 	}
 	
@@ -124,12 +124,12 @@ City::operator = ( const City &other )
 		delete bpoints;
 		people = new std::vector<Being *>;
 		bmap = new std::map<point, Being *>;
-		bpoints = new std::map<Being *, point>;
+		bpoints = new std::map<Being *, beingmeta_t>;
 		for (unsigned int i = 0; i < other.number_of_people(); i++) {
 			Being * bn = new Being(*(other.people->at(i)));
-			point bnp = (*other.bpoints)[bn];
+			beingmeta_t bnp = (*other.bpoints)[bn];
 			(*bpoints)[bn] = bnp;
-			(*bmap)[bnp] = bn;
+			(*bmap)[bnp.position] = bn;
 			people->push_back(bn);
 		}
 	}
@@ -342,17 +342,20 @@ void City::step() {
 	using point = std::pair<int, int>;
 	for (unsigned int i = 0; i < number_of_people(); i++) {
 		Being * b_current = people->at(i);
-		point p_current = (*bpoints)[b_current];
-		point p_next = b_current->propose_action();
-		EnvironmentObject nobj = get(p_next.first, p_next.second);
-		if (passible(nobj) && ABS(p_current.first - p_next.first) < 2 && ABS(p_current.second - p_next.second) < 2 && !point_hasperson(p_next)) {
-			b_current->position = p_next;
-			(*bpoints)[b_current] = p_next;
-			(*bmap)[p_current] = 0;
-			(*bmap)[p_next] = b_current;
-			to_be_updated.push(p_current);
-			to_be_updated.push(p_next);
-		}
+		(*bpoints)[b_current].movement_left++;
+//		beingmeta_t p_current = (*bpoints)[b_current];
+		b_current->act();
+//		beingmeta_t p_next = b_current->propose_action();
+//		p_next.movement_left = p_current.movement_left;
+//		EnvironmentObject nobj = get(p_next.position.first, p_next.position.second);
+//		if (passible(nobj) && ABS(p_current.position.first - p_next.position.first) < 2 && ABS(p_current.position.second - p_next.position.second) < 2 && !point_hasperson(p_next.position)) {
+//			b_current->position = p_next.position;
+//			(*bpoints)[b_current] = p_next;
+//			(*bmap)[p_current.position] = 0;
+//			(*bmap)[p_next.position] = b_current;
+//			to_be_updated.push(p_current.position);
+//			to_be_updated.push(p_next.position);
+//		}
 	}
 }
 
@@ -455,4 +458,33 @@ bool City::containsvalid(std::set<point> * area, std::function<bool(EnvironmentO
 			return true;
 	}
 	return false;
+}
+
+bool City::propose_action(point start, point end) {
+	if (!point_hasperson(start) || point_hasperson(end))
+		return false;
+	if (start == end)
+		return true;
+	Being * activebeing = (*bmap)[start];
+	beingmeta_t bm = (*bpoints)[activebeing];
+	int yd = ABS(start.first - end.first);
+	int xd = ABS(start.second - end.second);
+	if (yd > 1)
+		return false;
+	if (xd > 1)
+		return false;
+	movement_cost_t mc = 1;
+	if (xd + yd == 2)
+		mc += DIAGONAL_COST;
+	if (mc > bm.movement_left)
+		return false;
+	beingmeta_t bn(end, bm.movement_left - mc);
+	(*bpoints)[activebeing] = bn;
+	activebeing->position = end;
+	(*bmap)[start] = 0;
+	(*bmap)[end] = activebeing;
+	to_be_updated.push(start);
+	to_be_updated.push(end);
+
+	return true;
 }
