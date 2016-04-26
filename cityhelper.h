@@ -36,6 +36,7 @@ class CityHelper {
 		virtual bool containsvalid(std::set<point> *, std::function<bool(EnvironmentObject, Furniture)>) = 0;
 		virtual bool point_hasperson(point) const = 0;
 		virtual bool propose_action(point start, point end) = 0;
+		virtual beingmeta_t getmeta(point position) = 0;
 };
 
 #endif

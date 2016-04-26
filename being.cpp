@@ -123,7 +123,7 @@ Being::operator = ( const Being &other )
 }  /* -----  end of method Being::operator =  (assignment operator)  ----- */
 
 void Being::act() {
-	using point = std::pair<int, int>;
+	beingmeta_t mymeta = helper->getmeta(position);
 	if (home->empty()) {
 		delete home;
 		home = helper->contig(position, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
@@ -167,10 +167,11 @@ void Being::act() {
 			while (helper->point_hasperson(dest));
 
 		planned_path = pathto(dest);
-		if (planned_path->empty())
-			return;
+		return;
 	}
 	point next = planned_path->front();
+	if (ABS(position.first - next.first) + ABS(position.second - next.second) == 2 && mymeta.movement_left < 1 + DIAGONAL_COST)
+		return;
 //	if (ABS(position.first - next.first) > 1 || ABS(position.second - next.second) > 1) {
 //		while (!planned_path->empty())
 //			planned_path->pop();

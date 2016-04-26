@@ -140,6 +140,12 @@ class City : CityHelper
 				return true;
 		}
 
+		inline beingmeta_t getmeta(point position) {
+			if (!point_hasperson(position))
+				return beingmeta_t();
+			return (*bpoints)[(*bmap)[position]];
+		}
+
 		/* ====================  MUTATORS      ======================================= */
 		
 		bool add_building(Building building_type);

@@ -21,7 +21,7 @@
 
 #define PERSON_CHAR '@'
 #define PERSON_COLOUR COLOR_PAIR(11)
-#define MOVE_RATE 5
+//#define MOVE_RATE 1
 
 
 #include <ncurses.h>
@@ -63,7 +63,8 @@ void start_curses() {
 	start_color();
 	initcolors();
 	cbreak();
-	halfdelay(MOVE_RATE);
+//	halfdelay(MOVE_RATE);
+	timeout(10);
 	noecho();
 	curs_set(0);
 	displaybounds = Rectangle((CITY_SIZE - LINES) / 2, (CITY_SIZE - COLS) / 2, LINES - 1, COLS - 1);
@@ -71,8 +72,11 @@ void start_curses() {
 }
 
 void stop_curses() {
-	if (curses_running)
+	if (curses_running) {
+		timeout(-1);
+		nocbreak();
 		endwin();
+	}
 	curses_running = false;
 }
 

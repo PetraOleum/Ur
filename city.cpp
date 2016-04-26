@@ -342,9 +342,10 @@ void City::step() {
 	using point = std::pair<int, int>;
 	for (unsigned int i = 0; i < number_of_people(); i++) {
 		Being * b_current = people->at(i);
-		(*bpoints)[b_current].movement_left++;
+		(*bpoints)[b_current].movement_left+= 0.1;
 //		beingmeta_t p_current = (*bpoints)[b_current];
-		b_current->act();
+		if ((*bpoints)[b_current].movement_left >= 1)
+			b_current->act();
 //		beingmeta_t p_next = b_current->propose_action();
 //		p_next.movement_left = p_current.movement_left;
 //		EnvironmentObject nobj = get(p_next.position.first, p_next.position.second);
