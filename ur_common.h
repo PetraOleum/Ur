@@ -68,6 +68,13 @@ enum class Furniture : uint8_t {
 	Basin
 };
 
+enum class MovementOutcome : uint8_t {
+	Illegal,
+	InsufficientMovement,
+	Blocked,
+	Legal
+};
+
 inline bool passible(const EnvironmentObject& _ob) {
 	switch (_ob) {
 		case EnvironmentObject::Nothingness:

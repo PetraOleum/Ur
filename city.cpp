@@ -461,24 +461,26 @@ bool City::containsvalid(std::set<point> * area, std::function<bool(EnvironmentO
 	return false;
 }
 
-bool City::propose_action(point start, point end) {
-	if (!point_hasperson(start) || point_hasperson(end))
-		return false;
+MovementOutcome City::propose_action(point start, point end) {
+	if (!point_hasperson(start))
+		return MovementOutcome::Illegal;
+	if (point_hasperson(end))
+		return MovementOutcome::Blocked;
 	if (start == end)
-		return true;
+		return MovementOutcome::Legal;
 	Being * activebeing = (*bmap)[start];
 	beingmeta_t bm = (*bpoints)[activebeing];
 	int yd = ABS(start.first - end.first);
 	int xd = ABS(start.second - end.second);
 	if (yd > 1)
-		return false;
+		return MovementOutcome::Illegal;
 	if (xd > 1)
-		return false;
+		return MovementOutcome::Illegal;
 	movement_cost_t mc = 1;
 	if (xd + yd == 2)
 		mc += DIAGONAL_COST;
 	if (mc > bm.movement_left)
-		return false;
+		return MovementOutcome::InsufficientMovement;
 	beingmeta_t bn(end, bm.movement_left - mc);
 	(*bpoints)[activebeing] = bn;
 	activebeing->position = end;
@@ -487,5 +489,5 @@ bool City::propose_action(point start, point end) {
 	to_be_updated.push(start);
 	to_be_updated.push(end);
 
-	return true;
+	return MovementOutcome::Legal;
 }

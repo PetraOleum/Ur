@@ -164,7 +164,7 @@ class City : CityHelper
 
 		void step();
 
-		bool propose_action(point start, point end);
+		MovementOutcome propose_action(point start, point end);
 
 		Furniture pickup(point _pt);
 

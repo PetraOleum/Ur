@@ -123,7 +123,7 @@ Being::operator = ( const Being &other )
 }  /* -----  end of method Being::operator =  (assignment operator)  ----- */
 
 void Being::act() {
-	beingmeta_t mymeta = helper->getmeta(position);
+//	beingmeta_t mymeta = helper->getmeta(position);
 	if (home->empty()) {
 		delete home;
 		home = helper->contig(position, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
@@ -170,20 +170,33 @@ void Being::act() {
 		return;
 	}
 	point next = planned_path->front();
-	if (ABS(position.first - next.first) + ABS(position.second - next.second) == 2 && mymeta.movement_left < 1 + DIAGONAL_COST)
-		return;
+//	if (ABS(position.first - next.first) + ABS(position.second - next.second) == 2 && mymeta.movement_left < 1 + DIAGONAL_COST)
+//		return;
 //	if (ABS(position.first - next.first) > 1 || ABS(position.second - next.second) > 1) {
 //		while (!planned_path->empty())
 //			planned_path->pop();
 //		return std::make_pair(-1, -1);
 //	}
-	bool action_worked = helper->propose_action(position, next);
-	if (action_worked) {
-		failed_action = false;
-		planned_path->pop();
-	} else if (failed_action) {
-		while (!planned_path->empty())
+	MovementOutcome action_worked = helper->propose_action(position, next);
+//	if (action_worked) {
+//		failed_action = false;
+//		planned_path->pop();
+//	} else if (failed_action) {
+//		while (!planned_path->empty())
+//			planned_path->pop();
+//	} else
+//		failed_action = true;
+	switch(action_worked) {
+		case MovementOutcome::Legal:
 			planned_path->pop();
-	} else
-		failed_action = true;
+			break;
+		case MovementOutcome::InsufficientMovement:
+			failed_action = true;
+			break;
+		case MovementOutcome::Blocked:
+		case MovementOutcome::Illegal:
+			while (!planned_path->empty())
+				planned_path->pop();
+			break;
+	}
 }
