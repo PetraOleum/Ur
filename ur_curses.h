@@ -232,19 +232,18 @@ void toggleTimeout() {
 	}
 	TimeoutType = ttemp;
 	wtimeout(main_window, (int)TimeoutType);
-	werase(status_window);
 	switch (TimeoutType) {
 		case timeouttype_t::Tick:
-			mvwprintw(status_window, 0, 0, "TICK");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "   TICK");
 			break;
 		case timeouttype_t::Wait:
-			mvwprintw(status_window, 0, 0, "WAIT");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "   WAIT");
 			break;
 		case timeouttype_t::NoWait:
-			mvwprintw(status_window, 0, 0, "NO WAIT");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "NO WAIT");
 			break;
 		default:
-			mvwprintw(status_window, 0, 0, "GOD ONLY KNOWS");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "???????");
 	}
 	wrefresh(status_window);
 }
@@ -268,17 +267,18 @@ void redrawstatuswin() {
 	wbkgd(status_window, COLOR_PAIR(12));
 	switch (TimeoutType) {
 		case timeouttype_t::Tick:
-			mvwprintw(status_window, 0, 0, "TICK");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "   TICK");
 			break;
 		case timeouttype_t::Wait:
-			mvwprintw(status_window, 0, 0, "WAIT");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "   WAIT");
 			break;
 		case timeouttype_t::NoWait:
-			mvwprintw(status_window, 0, 0, "NO WAIT");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "NO WAIT");
 			break;
 		default:
-			mvwprintw(status_window, 0, 0, "GOD ONLY KNOWS");
+			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "???????");
 	}
+	mvwprintw(status_window, 0, 1, "<%d, %d> - <%d, %d>", displaybounds.ylow(), displaybounds.xlow(), displaybounds.yhigh(), displaybounds.xhigh());
 	wrefresh(status_window);
 }
 #endif   /* ----- #ifndef UR_CURSES_INC  ----- */
