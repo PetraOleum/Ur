@@ -172,6 +172,9 @@ int main() {
 				city.step();
 				updatemap(city);
 				break;
+			case '?':
+				show_help();
+				break;
 			default:
 				break;
 		}

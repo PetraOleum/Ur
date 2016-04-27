@@ -1,7 +1,7 @@
 all: ur
 
 ur: main.o rectangle.o house.o city.o being.o
-	g++ -o ur main.o rectangle.o house.o city.o being.o -std=c++11 -lncurses
+	g++ -o ur main.o rectangle.o house.o city.o being.o -std=c++11 -lpanel -lncurses
 
 main.o:
 	g++ -c main.cpp -std=c++11

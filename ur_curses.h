@@ -34,8 +34,13 @@
 #define STATUS_WIN_WIDTH COLS
 #define STATUS_WIN_Y (MAIN_WIN_Y + MAIN_WIN_HEIGHT)
 #define STATUS_WIN_X 0
+#define HELP_WIN_HEIGHT 20
+#define HELP_WIN_WIDTH 35
+#define HELP_WIN_Y ((LINES - HELP_WIN_HEIGHT) / 2)
+#define HELP_WIN_X ((COLS - HELP_WIN_WIDTH) / 2)
 
 #include <ncurses.h>
+#include <panel.h>
 #include "ur_common.h"
 #include "rectangle.h"
 #include "city.h"
@@ -46,6 +51,12 @@ bool curses_running = false;
 WINDOW * main_window;
 WINDOW * status_window;
 WINDOW * top_window;
+WINDOW * help_window;
+
+PANEL * main_win_panel;
+PANEL * status_win_panel;
+PANEL * top_win_panel;
+PANEL * help_win_panel;
 
 enum class timeouttype_t {
 	Wait = -1,
@@ -65,6 +76,8 @@ void updatemap(City &_city) ;
 inline char furniture_char(const Furniture& _f);
 void toggleTimeout();
 void centre_on(point centre);
+void init_help_win();
+void show_help();
 
 void initcolors() {
 	init_pair(1, COLOR_BLACK, COLOR_BLUE);
@@ -95,8 +108,16 @@ void start_curses() {
 	top_window = newwin(TOP_WIN_HEIGHT, TOP_WIN_WIDTH, TOP_WIN_Y, TOP_WIN_X);
 	main_window = newwin(MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_Y, MAIN_WIN_X);
 	status_window = newwin(STATUS_WIN_HEIGHT, STATUS_WIN_WIDTH, STATUS_WIN_Y, STATUS_WIN_X);
+	help_window = newwin(HELP_WIN_HEIGHT, HELP_WIN_WIDTH, HELP_WIN_Y, HELP_WIN_X);
+	help_win_panel = new_panel(help_window);
+	main_win_panel = new_panel(main_window);
+	top_win_panel = new_panel(top_window);
+	status_win_panel = new_panel(status_window);
+	hide_panel(help_win_panel);
 	centre_on(std::make_pair(CITY_SIZE / 2, CITY_SIZE / 2));
 	curses_running = true;
+	update_panels();
+	doupdate();
 }
 
 void stop_curses() {
@@ -149,12 +170,14 @@ inline int environment_object_colour(EnvironmentObject _ob) {
 }
 
 void refreshmap(City &_city) {
+	init_help_win();
 	redrawtopwin();
 	redrawstatuswin();
 	_city.clear_unprocessed_points();
 	displaybounds = Rectangle(displaybounds.ylow(), displaybounds.xlow(), MAIN_WIN_HEIGHT - 1, MAIN_WIN_WIDTH - 1);
 	delwin(main_window);
 	main_window = newwin(MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_Y, MAIN_WIN_X);
+	replace_panel(main_win_panel, main_window);
 	wtimeout(main_window, (int)TimeoutType);
 	for (int y = 0; y < displaybounds.height(); y++)
 		for (int x = 0; x < displaybounds.width(); x++) {
@@ -172,7 +195,9 @@ void refreshmap(City &_city) {
 				mvwaddch(main_window, p_pos.first - displaybounds.ylow(), p_pos.second - displaybounds.xlow(), PERSON_CHAR);
 	}
 	wattron(main_window, COLOR_PAIR(6));
-	wrefresh(main_window);
+//	wrefresh(main_window);
+	update_panels();
+	doupdate();
 }
 
 void updatemap(City &_city) {
@@ -192,7 +217,9 @@ void updatemap(City &_city) {
 		}
 	}
 	wattron(main_window, COLOR_PAIR(6));
-	wrefresh(main_window);
+//	wrefresh(main_window);
+	update_panels();
+	doupdate();
 }
 
 inline char furniture_char(const Furniture& _f) {
@@ -245,7 +272,9 @@ void toggleTimeout() {
 		default:
 			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "???????");
 	}
-	wrefresh(status_window);
+//	wrefresh(status_window);
+	update_panels();
+	doupdate();
 }
 
 void centre_on(point centre) {
@@ -255,15 +284,17 @@ void centre_on(point centre) {
 void redrawtopwin() {
 	delwin(top_window);
 	top_window = newwin(TOP_WIN_HEIGHT, TOP_WIN_WIDTH, TOP_WIN_Y, TOP_WIN_X);
+	replace_panel(top_win_panel, top_window);
 	wbkgd(top_window, COLOR_PAIR(12));
 	mvwhline(top_window, 0, 2, '=', TOP_WIN_WIDTH - 4);
 	mvwprintw(top_window, 0, (TOP_WIN_WIDTH - 4) / 2, " UR ");
-	wrefresh(top_window);
+//	wrefresh(top_window);
 }
 
 void redrawstatuswin() {
 	delwin(status_window);
 	status_window = newwin(STATUS_WIN_HEIGHT, STATUS_WIN_WIDTH, STATUS_WIN_Y, STATUS_WIN_X);
+	replace_panel(status_win_panel, status_window);
 	wbkgd(status_window, COLOR_PAIR(12));
 	switch (TimeoutType) {
 		case timeouttype_t::Tick:
@@ -279,6 +310,35 @@ void redrawstatuswin() {
 			mvwprintw(status_window, 0, STATUS_WIN_WIDTH - 8, "???????");
 	}
 	mvwprintw(status_window, 0, 1, "<%d, %d> - <%d, %d>", displaybounds.ylow(), displaybounds.xlow(), displaybounds.yhigh(), displaybounds.xhigh());
-	wrefresh(status_window);
+	mvwprintw(status_window, 0, STATUS_WIN_WIDTH - (8 + 12), "[HELP: ?]");
+//	wrefresh(status_window);
+}
+void init_help_win() {
+	delwin(help_window);
+	help_window = newwin(HELP_WIN_HEIGHT, HELP_WIN_WIDTH, HELP_WIN_Y, HELP_WIN_X);
+	replace_panel(help_win_panel, help_window);
+	box(help_window, 0, 0);
+	mvwprintw(help_window, 0, (HELP_WIN_WIDTH - 6) / 2, " HELP ");
+	mvwprintw(help_window, 3, 3,  "Move Window          hjklyubn");
+	mvwprintw(help_window, 5, 3,  "Centre Window         <space>");
+	mvwprintw(help_window, 7, 3,  "Centre Random Being         f");
+	mvwprintw(help_window, 9, 3,  "Add Furniture               a");
+	mvwprintw(help_window, 11, 3, "Toggle Timeout Style        p");
+	mvwprintw(help_window, 13, 3, "Step                        .");
+	mvwprintw(help_window, 15, 3, "Help                        ?");
+	mvwprintw(help_window, 17, 3, "Quit                        q");
+}
+
+void show_help() {
+	show_panel(help_win_panel);
+	update_panels();
+	doupdate();
+	char ch;
+	do
+		ch = wgetch(help_window);
+	while (ch != 'q' && ch != '?');
+	hide_panel(help_win_panel);
+	update_panels();
+	doupdate();
 }
 #endif   /* ----- #ifndef UR_CURSES_INC  ----- */
