@@ -124,41 +124,72 @@ Being::operator = ( const Being &other )
 
 void Being::act() {
 //	beingmeta_t mymeta = helper->getmeta(position);
+
+	// Is a floor (EnvironmentObject parameter only)
+	auto isFloor = [](EnvironmentObject _obj) {
+		return _obj == EnvironmentObject::Floor;
+	};
+
+	// Is a floor, with no Being on it
+	auto isFloorb = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj == EnvironmentObject::Floor) && !helper->point_hasperson(_pt);
+	};
+
+	// Is a floor, with no being on it, having no furniture on it, and within home
+	auto clearFloorInside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt) && (home->find(_pt) != home->end());
+	};
+
+	// Is a floor, with no being on it, having no furniture on it
+	auto clearFloor = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt);
+	};
+
+	// Is a floor, with no being on it, having no furniture on it, not within home
+	auto clearFloorOutside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt) && (home->find(_pt) == home->end());
+	};
+	
+	// Has no being on it, having a furniture on it, and not within home
+	auto furnitureOutside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_f != Furniture::None) && !helper->point_hasperson(_pt) && (home->find(_pt) == home->end());
+	};
+
 	if (home->empty()) {
 		delete home;
-		home = helper->contig(position, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
+		home = helper->contig(position, isFloor);
 	}
 	if (planned_path->empty()) {
 		delete planned_path;
 		point dest = position;
 		if (home->empty()) {
-			dest = helper->find_nearest(position, [](point _p, EnvironmentObject _obj, Furniture _f) {return (_obj == EnvironmentObject::Floor);});
+			dest = helper->find_nearest(position, isFloorb);
 		}
 		else if (carrying_furniture != Furniture::None) {
 			if (helper->drop(position, carrying_furniture)) {
 				carrying_furniture = Furniture::None;
-				dest = helper->find_nearest(position, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj != EnvironmentObject::Nothingness) && (_f != Furniture::None) && (home->find(_p) == home->end()) && !helper->point_hasperson(_p);});
-			} else if (helper->containsvalid(home, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt);})){
-				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_pt) != home->end()) && !helper->point_hasperson(_pt);});
-			} else {
-				point newaddition = helper->find_nearest(initialposition, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_p) == home->end()); });
-				std::set<point> * nadd = helper->contig(newaddition, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
+				dest = helper->find_nearest(position, furnitureOutside);
+			} else if (helper->containsvalid(home, clearFloor))
+				dest = helper->find_nearest(position, clearFloorInside);
+			else {
+				point newaddition = helper->find_nearest(initialposition, clearFloorOutside);
+				std::set<point> * nadd = helper->contig(newaddition, isFloor);
 				home->insert(nadd->begin(), nadd->end());
 				delete nadd;
-				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return _obj == EnvironmentObject::Floor && _f == Furniture::None && (home->find(_pt) != home->end()) && !helper->point_hasperson(_pt);});
+				dest = helper->find_nearest(position, clearFloorInside);
 			}
 		} else {
 			carrying_furniture = helper->pickup(position);
 			if (carrying_furniture == Furniture::None)
-				dest = helper->find_nearest(position, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj != EnvironmentObject::Nothingness) && (_f != Furniture::None) && (home->find(_p) == home->end()) && !helper->point_hasperson(_p);});
-			else if (helper->containsvalid(home, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt);}))
-				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_pt) != home->end()) && !helper->point_hasperson(_pt);});
+				dest = helper->find_nearest(position, furnitureOutside);
+			else if (helper->containsvalid(home, clearFloor))
+				dest = helper->find_nearest(position, clearFloorInside);
 			else {
-				point newaddition = helper->find_nearest(initialposition, [this](point _p, EnvironmentObject _obj, Furniture _f) { return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (home->find(_p) == home->end()); });
-				std::set<point> * nadd = helper->contig(newaddition, [](EnvironmentObject _obj) { return _obj == EnvironmentObject::Floor; });
+				point newaddition = helper->find_nearest(initialposition, clearFloorOutside);
+				std::set<point> * nadd = helper->contig(newaddition, isFloor);
 				home->insert(nadd->begin(), nadd->end());
 				delete nadd;
-				dest = helper->find_nearest(position, [this](point _pt, EnvironmentObject _obj, Furniture _f) { return _obj == EnvironmentObject::Floor && _f == Furniture::None && (home->find(_pt) != home->end()) && !helper->point_hasperson(_pt);});
+				dest = helper->find_nearest(position, clearFloorInside);
 			}
 		}
 		if (dest == position) 
@@ -170,22 +201,7 @@ void Being::act() {
 		return;
 	}
 	point next = planned_path->front();
-//	if (ABS(position.first - next.first) + ABS(position.second - next.second) == 2 && mymeta.movement_left < 1 + DIAGONAL_COST)
-//		return;
-//	if (ABS(position.first - next.first) > 1 || ABS(position.second - next.second) > 1) {
-//		while (!planned_path->empty())
-//			planned_path->pop();
-//		return std::make_pair(-1, -1);
-//	}
 	MovementOutcome action_worked = helper->propose_action(position, next);
-//	if (action_worked) {
-//		failed_action = false;
-//		planned_path->pop();
-//	} else if (failed_action) {
-//		while (!planned_path->empty())
-//			planned_path->pop();
-//	} else
-//		failed_action = true;
 	switch(action_worked) {
 		case MovementOutcome::Legal:
 			planned_path->pop();
