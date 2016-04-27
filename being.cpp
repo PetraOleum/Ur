@@ -157,39 +157,39 @@ void Being::act() {
 
 	if (home->empty()) {
 		delete home;
-		home = helper->contig(position, isFloor);
+		home = helper->contig(position, isFloor); // set of points within room
 	}
 	if (planned_path->empty()) {
 		delete planned_path;
 		point dest = position;
 		if (home->empty()) {
-			dest = helper->find_nearest(position, isFloorb);
+			dest = helper->find_nearest(position, isFloorb); // Nearest floor with no Being on it currently
 		}
 		else if (carrying_furniture != Furniture::None) {
 			if (helper->drop(position, carrying_furniture)) {
 				carrying_furniture = Furniture::None;
-				dest = helper->find_nearest(position, furnitureOutside);
-			} else if (helper->containsvalid(home, clearFloor))
-				dest = helper->find_nearest(position, clearFloorInside);
+				dest = helper->find_nearest(position, furnitureOutside); // Nearest furniture outside of home
+			} else if (helper->containsvalid(home, clearFloor)) // home contains a floor location with no furniture or beings on it
+				dest = helper->find_nearest(position, clearFloorInside); // Nearest clear floor location inside home
 			else {
-				point newaddition = helper->find_nearest(initialposition, clearFloorOutside);
-				std::set<point> * nadd = helper->contig(newaddition, isFloor);
+				point newaddition = helper->find_nearest(initialposition, clearFloorOutside); // Nearest clear floor position outside of home
+				std::set<point> * nadd = helper->contig(newaddition, isFloor); // set of points within the room that newaddition is in
 				home->insert(nadd->begin(), nadd->end());
 				delete nadd;
-				dest = helper->find_nearest(position, clearFloorInside);
+				dest = helper->find_nearest(position, clearFloorInside); // nearest point within expanded home with nothing on it
 			}
 		} else {
 			carrying_furniture = helper->pickup(position);
 			if (carrying_furniture == Furniture::None)
-				dest = helper->find_nearest(position, furnitureOutside);
+				dest = helper->find_nearest(position, furnitureOutside); // Nearest furniture outside home
 			else if (helper->containsvalid(home, clearFloor))
-				dest = helper->find_nearest(position, clearFloorInside);
+				dest = helper->find_nearest(position, clearFloorInside); // Nearest clear floor location in home
 			else {
-				point newaddition = helper->find_nearest(initialposition, clearFloorOutside);
-				std::set<point> * nadd = helper->contig(newaddition, isFloor);
+				point newaddition = helper->find_nearest(initialposition, clearFloorOutside); // Nearest clear floor location ouside home
+				std::set<point> * nadd = helper->contig(newaddition, isFloor); // Set of points of the room in which newaddition is contained
 				home->insert(nadd->begin(), nadd->end());
 				delete nadd;
-				dest = helper->find_nearest(position, clearFloorInside);
+				dest = helper->find_nearest(position, clearFloorInside); // nearest clear floor location within expanded home
 			}
 		}
 		if (dest == position) 
