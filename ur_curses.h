@@ -32,6 +32,12 @@
 Rectangle displaybounds;
 bool curses_running = false;
 
+enum class timeouttype_t {
+	Wait = -1,
+	NoWait = 0,
+	Tick = 10
+} TimeoutType;
+
 void initcolors() ;
 void start_curses() ;
 void stop_curses() ;
@@ -41,6 +47,7 @@ inline int environment_object_colour(EnvironmentObject _ob) ;
 void refreshmap(City &_city) ;
 void updatemap(City &_city) ;
 inline char furniture_char(const Furniture& _f);
+void toggleTimeout();
 
 void initcolors() {
 	init_pair(1, COLOR_BLACK, COLOR_BLUE);
@@ -60,11 +67,12 @@ void start_curses() {
 	if (curses_running)
 		return;
 	initscr();
+	TimeoutType = timeouttype_t::Tick;
 	start_color();
 	initcolors();
 	cbreak();
 //	halfdelay(MOVE_RATE);
-	timeout(10);
+	timeout((int)TimeoutType);
 	noecho();
 	curs_set(0);
 	displaybounds = Rectangle((CITY_SIZE - LINES) / 2, (CITY_SIZE - COLS) / 2, LINES - 1, COLS - 1);
@@ -73,7 +81,8 @@ void start_curses() {
 
 void stop_curses() {
 	if (curses_running) {
-		timeout(-1);
+		timeout((int)timeouttype_t::Wait);
+		TimeoutType = timeouttype_t::Wait;
 		nocbreak();
 		endwin();
 	}
@@ -181,5 +190,21 @@ inline char furniture_char(const Furniture& _f) {
 }
 
 
+void toggleTimeout() {
+	timeouttype_t ttemp;
+	switch (TimeoutType) {
+		case timeouttype_t::Wait:
+			ttemp = timeouttype_t::NoWait;
+			break;
+		case timeouttype_t::Tick:
+			ttemp = timeouttype_t::Wait;
+			break;
+		case timeouttype_t::NoWait:
+		default:
+			ttemp = timeouttype_t::Tick;
+	}
+	TimeoutType = ttemp;
+	timeout((int)TimeoutType);
+}
 
 #endif   /* ----- #ifndef UR_CURSES_INC  ----- */

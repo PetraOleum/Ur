@@ -166,6 +166,9 @@ int main() {
 
 				}
 				break;
+			case 'p':
+				toggleTimeout();
+				break;
 			case ERR:
 			case '.':
 				city.step();
