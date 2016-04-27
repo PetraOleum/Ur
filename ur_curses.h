@@ -21,8 +21,6 @@
 
 #define PERSON_CHAR '@'
 #define PERSON_COLOUR COLOR_PAIR(11)
-//#define MOVE_RATE 1
-
 
 #include <ncurses.h>
 #include "ur_common.h"
@@ -41,13 +39,13 @@ enum class timeouttype_t {
 void initcolors() ;
 void start_curses() ;
 void stop_curses() ;
-void stop_curses() ;
 inline char environment_object_symbol(EnvironmentObject _ob) ;
 inline int environment_object_colour(EnvironmentObject _ob) ;
 void refreshmap(City &_city) ;
 void updatemap(City &_city) ;
 inline char furniture_char(const Furniture& _f);
 void toggleTimeout();
+void centre_on(point centre);
 
 void initcolors() {
 	init_pair(1, COLOR_BLACK, COLOR_BLUE);
@@ -71,11 +69,10 @@ void start_curses() {
 	start_color();
 	initcolors();
 	cbreak();
-//	halfdelay(MOVE_RATE);
 	timeout((int)TimeoutType);
 	noecho();
 	curs_set(0);
-	displaybounds = Rectangle((CITY_SIZE - LINES) / 2, (CITY_SIZE - COLS) / 2, LINES - 1, COLS - 1);
+	centre_on(std::make_pair(CITY_SIZE / 2, CITY_SIZE / 2));
 	curses_running = true;
 }
 
@@ -205,6 +202,10 @@ void toggleTimeout() {
 	}
 	TimeoutType = ttemp;
 	timeout((int)TimeoutType);
+}
+
+void centre_on(point centre) {
+	displaybounds = Rectangle(centre.first - LINES / 2, centre.second - COLS / 2, LINES - 1, COLS - 1);
 }
 
 #endif   /* ----- #ifndef UR_CURSES_INC  ----- */
