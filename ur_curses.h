@@ -114,6 +114,7 @@ void start_curses() {
 	top_win_panel = new_panel(top_window);
 	status_win_panel = new_panel(status_window);
 	hide_panel(help_win_panel);
+	init_help_win();
 	centre_on(std::make_pair(CITY_SIZE / 2, CITY_SIZE / 2));
 	curses_running = true;
 	update_panels();
@@ -170,7 +171,8 @@ inline int environment_object_colour(EnvironmentObject _ob) {
 }
 
 void refreshmap(City &_city) {
-	init_help_win();
+//	init_help_win();
+	move_panel(help_win_panel, HELP_WIN_Y, HELP_WIN_X);
 	redrawtopwin();
 	redrawstatuswin();
 	_city.clear_unprocessed_points();
