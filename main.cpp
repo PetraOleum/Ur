@@ -84,8 +84,7 @@ int main() {
 	start_curses();
 	refreshmap(city);
 
-
-	while ((ch = getch()) != 'q') {
+	while ((ch = wgetch(main_window)) != 'q') {
 		switch (ch) {
 			case 'h':
 				displaybounds += std::make_pair(0, -5);
