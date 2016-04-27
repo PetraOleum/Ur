@@ -89,7 +89,7 @@ class City : CityHelper
 				return junk[_location];
 		}
 
-		inline Furniture junk_get(const point _location) const {
+		inline Furniture junk_get(point _location) const {
 			if (_location.first < 0 || _location.second < 0 || _location.first >= CITY_SIZE || _location.second >= CITY_SIZE)
 				return Furniture::None;
 			else {
@@ -124,7 +124,7 @@ class City : CityHelper
 
 		std::set<point> * contig(point, std::function<bool(EnvironmentObject)>);
 
-		bool containsvalid(std::set<point> * area, std::function<bool(EnvironmentObject, Furniture)> criterion);
+		bool containsvalid(std::set<point> * area, std::function<bool(point, EnvironmentObject, Furniture)> criterion);
 
 		inline bool points_unprocessed() const {
 			return !to_be_updated.empty();
@@ -140,9 +140,9 @@ class City : CityHelper
 				return true;
 		}
 
-		inline beingmeta_t getmeta(point position) {
+		inline beingmeta_t getmeta(point position) const {
 			if (!point_hasperson(position))
-				return beingmeta_t();
+				throw std::out_of_range("Not a valid position to getmeta() (no being here). std::out_of_range");
 			return (*bpoints)[(*bmap)[position]];
 		}
 

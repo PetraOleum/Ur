@@ -451,11 +451,11 @@ std::set<point> * City::contig(point anchor, std::function<bool(EnvironmentObjec
 	return _contig;
 }
 
-bool City::containsvalid(std::set<point> * area, std::function<bool(EnvironmentObject, Furniture)> criterion) {
+bool City::containsvalid(std::set<point> * area, std::function<bool(point, EnvironmentObject, Furniture)> criterion) {
 	for (point _pt : (*area)) {
 		EnvironmentObject _eobj = get(_pt.first, _pt.second);
 		Furniture _f = junk_get(_pt);
-		if (criterion(_eobj, _f))
+		if (criterion(_pt, _eobj, _f))
 			return true;
 	}
 	return false;
