@@ -24,6 +24,7 @@
 #include "rectangle.h"
 #include "ur_common.h"
 #include <stdexcept>
+#include "construction.h"
 
 
 /*
@@ -32,26 +33,26 @@
  *  Description:  House class header
  * =====================================================================================
  */
-class House
+class House : public Construction
 {
 	public:
-		Rectangle bounds;
-		Building building_type;
+//		Rectangle bounds;
+//		Building building_type;
 
 		/* ====================  LIFECYCLE     ======================================= */
 		House ();                             /* constructor      */
-		House ( const Rectangle& _bounds);
-		House ( const Rectangle& _bounds, Building b_t);
+//		House ( const Rectangle& _bounds);
+//		House ( const Rectangle& _bounds, Building b_t);
 		House ( House &other );   /* copy constructor */
 		~House ();                            /* destructor       */
 
 		/* ====================  ACCESSORS     ======================================= */
 
-		std::vector<std::pair<int, int> > * perimeter();
+		std::set<point> * perimeter();
 		bool valid();
 
-		std::vector<std::pair<int, int> > * get_doors() {
-			std::vector<std::pair<int, int> > * d2 = new std::vector<std::pair<int, int> >(*doors);
+		std::set<point> * get_doors() {
+			std::set<std::pair<int, int> > * d2 = new std::set<std::pair<int, int> >(*doors);
 			return d2;
 		}
 
@@ -83,11 +84,11 @@ class House
 			return doors->size();
 		}
 
-		inline std::pair<int, int>& door_at(const int index) {
-			if (index < 0 || (unsigned int)index >= number_of_doors())
-				throw std::out_of_range("Attempting to access non-existant door std::pair<int, int> in House, Out of Range error std::out_of_range");
-			return doors->at(index);
-		}
+//		inline std::pair<int, int>& door_at(const int index) {
+//			if (index < 0 || (unsigned int)index >= number_of_doors())
+//				throw std::out_of_range("Attempting to access non-existant door std::pair<int, int> in House, Out of Range error std::out_of_range");
+//			return doors->at(index);
+//		}
 
 		int contact_length(Rectangle &rect);
 
@@ -117,16 +118,16 @@ class House
 		/* ====================  MUTATORS      ======================================= */
 
 		bool create() {
-			return create(bounds, building_type);
+			return create(bounds(), building_type());
 		}
 
-		bool create(Rectangle& _bound) {
-			return create(_bound, building_type);
+		bool create(const Rectangle& _bound) {
+			return create(_bound, building_type());
 		}
 
 		bool create(Building _b_t) ;
 
-		bool create(Rectangle& _bound, Building _b_t) ;
+		bool create(const Rectangle& _bound, Building _b_t) ;
 
 		void changebounds(int buffer = 0);
 
@@ -140,7 +141,7 @@ class House
 			delete doors;
 			rooms = new std::vector<Rectangle>;
 			areas = new std::vector<Rectangle>;
-			doors = new std::vector<std::pair<int, int> >;
+			doors = new std::set<std::pair<int, int> >;
 		}
 
 		int fill_with_rooms();
@@ -167,26 +168,31 @@ class House
 			return *this;
 		}
 
-		House& operator+= (const std::pair<int, int>& point) {
-			bounds += point;
+		House& operator+= (const std::pair<int, int>& _point) {
+			bounds() += _point;
 			for (unsigned int i = 0; i < number_of_rectangles(); i++)
-				areas->at(i) += point;
+				areas->at(i) += _point;
 			for (unsigned int i = 0; i < number_of_rooms(); i++)
-				rooms->at(i) += point;
-			for (unsigned int i = 0; i < number_of_doors(); i++)
-				doors->at(i) = std::make_pair(doors->at(i).first + point.first, doors->at(i).second + point.second);
-			
+				rooms->at(i) += _point;
+			std::set<point> * ndoors = new std::set<point>;
+			for (auto pt : *doors)
+				ndoors->insert(std::make_pair(pt.first + _point.first, pt.second + _point.second));
+			delete doors;
+			doors = ndoors;
 			return *this;
 		}
 
-		House& operator-= (const std::pair<int, int>& point) {
-			bounds -= point;
+		House& operator-= (const std::pair<int, int>& _point) {
+			bounds() -= _point;
 			for (unsigned int i = 0; i < number_of_rectangles(); i++)
-				areas->at(i) -= point;
+				areas->at(i) -= _point;
 			for (unsigned int i = 0; i < number_of_rooms(); i++)
-				rooms->at(i) -= point;
-			for (unsigned int i = 0; i < number_of_doors(); i++)
-				doors->at(i) = std::make_pair(doors->at(i).first - point.first, doors->at(i).second - point.second);
+				rooms->at(i) -= _point;
+			std::set<point> * ndoors = new std::set<point>;
+			for (auto pt : *doors)
+				ndoors->insert(std::make_pair(pt.first - _point.first, pt.second - _point.second));
+			delete doors;
+			doors = ndoors;
 			return *this;
 		}
 
@@ -199,7 +205,7 @@ class House
 
 		std::vector<Rectangle> * areas;
 		std::vector<Rectangle> * rooms;
-		std::vector<std::pair<int, int> > * doors;
+		std::set<std::pair<int, int> > * doors;
 
 
 }; /* -----  end of class House  ----- */

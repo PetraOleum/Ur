@@ -23,7 +23,7 @@ int main() {
 	for (int i = 0; i < 40; i++)
 		city.add_building(Building::Mansion);
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 10; i++)
 		city.add_building(Building::Cottage);
 
 	for (int i = 0; i < 150; i++)
@@ -38,7 +38,7 @@ int main() {
 	for (int i = 0; i < 30; i++)
 		city.add_building(Building::Tavern);
 
-	for (int i = 0; i < 800; i++)
+	for (int i = 0; i < 10; i++)
 		city.add_building(Building::Hovel);
 
 	city.add_people(100);

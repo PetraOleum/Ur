@@ -25,6 +25,7 @@
 #include "ur_common.h"
 #include "being.h"
 #include "cityhelper.h"
+#include "construction.h"
 
 #include <queue>
 #include <map>

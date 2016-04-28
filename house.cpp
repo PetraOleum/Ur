@@ -21,6 +21,7 @@
 #include <climits>
 #include <stdlib.h>
 #include <set>
+//#include <iostream>
 
 /*
  *--------------------------------------------------------------------------------------
@@ -33,24 +34,24 @@ House::House ()
 {
 	areas = new std::vector<Rectangle>;
 	rooms = new std::vector<Rectangle>;
-	doors = new std::vector<std::pair<int, int> >;
-	bounds = Rectangle();
+	doors = new std::set<point>;
+	_bounds = Rectangle();
 }  /* -----  end of method House::House  (constructor)  ----- */
 
-House::House(const Rectangle& _bounds) {
-	areas = new std::vector<Rectangle>;
-	rooms = new std::vector<Rectangle>;
-	doors = new std::vector<std::pair<int, int> >;
-	bounds = _bounds;
-}
-
-House::House(const Rectangle& _bounds, Building b_t) {
-	areas = new std::vector<Rectangle>;
-	rooms = new std::vector<Rectangle>;
-	doors = new std::vector<std::pair<int, int> >;
-	bounds = _bounds;
-	building_type = b_t;
-}
+//House::House(const Rectangle& _bounds) {
+//	areas = new std::vector<Rectangle>;
+//	rooms = new std::vector<Rectangle>;
+//	doors = new std::set<point>;
+//	bounds = _bounds;
+//}
+//
+//House::House(const Rectangle& _bounds, Building b_t) {
+//	areas = new std::vector<Rectangle>;
+//	rooms = new std::vector<Rectangle>;
+//	doors = new std::set<point>;
+//	bounds = _bounds;
+//	building_type = b_t;
+//}
 
 /*
  *--------------------------------------------------------------------------------------
@@ -61,13 +62,13 @@ House::House(const Rectangle& _bounds, Building b_t) {
  */
 House::House ( House &other )
 {
-	bounds = other.bounds;
+	bounds() = other.bounds();
 	areas = new std::vector<Rectangle>;
 	areas->insert(areas->end(), other.areas->begin(), other.areas->end());
 	rooms = new std::vector<Rectangle>;
 	rooms->insert(rooms->end(), other.rooms->begin(), other.rooms->end());
-	doors = new std::vector<std::pair<int, int> >;
-	doors->insert(doors->end(), other.doors->begin(), other.doors->end());
+	doors = new std::set<point>(*(other.doors));
+//	doors->insert(doors->end(), other.doors->begin(), other.doors->end());
 	
 }  /* -----  end of method House::House  (copy constructor)  ----- */
 
@@ -96,7 +97,7 @@ House::~House ()
 House::operator = ( const House &other )
 {
 	if ( this != &other ) {
-		bounds = other.bounds;
+		_bounds = other._bounds;
 		delete areas;
 		delete rooms;
 		delete doors;
@@ -104,14 +105,14 @@ House::operator = ( const House &other )
 		areas->insert(areas->end(), other.areas->begin(), other.areas->end());
 		rooms = new std::vector<Rectangle>;
 		rooms->insert(rooms->end(), other.rooms->begin(), other.rooms->end());
-		doors = new std::vector<std::pair<int, int> >;
-		doors->insert(doors->end(), other.doors->begin(), other.doors->end());
+		doors = new std::set<point>(*(other.doors));
+//		doors->insert(doors->end(), other.doors->begin(), other.doors->end());
 	}
 	return *this;
 }  /* -----  end of method House::operator =  (assignment operator)  ----- */
 
-std::vector<std::pair<int, int> > * House::perimeter() {
-	std::vector<std::pair<int, int> > * perim = new std::vector<std::pair<int, int> >;
+std::set<std::pair<int, int> > * House::perimeter() {
+	std::set<std::pair<int, int> > * perim = new std::set<std::pair<int, int> >;
 
 	for (unsigned int i = 0; i < number_of_rectangles(); i++) {
 
@@ -120,7 +121,7 @@ std::vector<std::pair<int, int> > * House::perimeter() {
 			delete recperim;
 			continue;
 		}
-		std::vector<std::pair<int, int> > * recborders = new std::vector<std::pair<int, int> >;
+		std::set<std::pair<int, int> > * recborders = new std::set<std::pair<int, int> >;
 		for (unsigned int q = 0; q < number_of_rectangles(); q++) {
 			if (q == i) continue;
 			std::vector<std::pair<int, int> > * rec_cont = rec_at(i).interlock(rec_at(q));
@@ -130,25 +131,14 @@ std::vector<std::pair<int, int> > * House::perimeter() {
 			else if (rec_cont->size() < 3){
 				delete rec_cont;
 			} else {
-				recborders->insert(recborders->end(), rec_cont->begin() + 1, rec_cont->end() - 1);
+				for (unsigned int i = 1; i < rec_cont->size() - 1; i++)
+					recborders->insert(rec_cont->at(i));
 				delete rec_cont;
 			}
-/* 			if (rec_cont->empty()) {
- * 				delete rec_cont;
- * 				continue;
- * 			}
- * 			// nope nope nope redo redo
- * 			for (unsigned int p = 0; p < recperim->size(); p++) {
- * 				if (std::find(rec_cont->begin(), rec_cont->end(), recperim->at(p)) != rec_cont->end())
- * 					perim->push_back(recperim->at(p));
- * 			}
- */
-
 		}
-//		if (!recborders->empty())
 		for (unsigned int p = 0; p < recperim->size(); p++)
 			if (std::find(recborders->begin(), recborders->end(), recperim->at(p)) == recborders->end())
-				perim->push_back(recperim->at(p));
+				perim->insert(recperim->at(p));
 
 		delete recperim;
 		delete recborders;
@@ -160,7 +150,7 @@ std::vector<std::pair<int, int> > * House::perimeter() {
 
 bool House::valid() {
 	for (unsigned int i1 = 0; i1 < number_of_rectangles(); i1++) {
-		if (!bounds.contains(rec_at(i1)))
+		if (!bounds().contains(rec_at(i1)))
 			return false;
 		for (unsigned int i2 = i1 + 1; i2 < number_of_rectangles(); i2++)
 			if (overlap(rec_at(i1), rec_at(i2)) && !interlock(rec_at(i1), rec_at(i2)))
@@ -214,7 +204,7 @@ int House::true_xhigh() {
 }
 
 void House::changebounds(int buffer) {
-	bounds = Rectangle(std::make_pair(true_ylow() - buffer, true_xlow() - buffer), std::make_pair(true_yhigh() + buffer, true_xhigh() + buffer));
+	bounds() = Rectangle(std::make_pair(true_ylow() - buffer, true_xlow() - buffer), std::make_pair(true_yhigh() + buffer, true_xhigh() + buffer));
 }
 
 int House::floor_area() {
@@ -404,7 +394,7 @@ int House::fill_with_rooms_2() {
 	delete rooms;
 	delete doors;
 	rooms = new std::vector<Rectangle>;
-	doors = new std::vector<std::pair<int, int> >;
+	doors = new std::set<point>;
 
 	for (unsigned int q = 0; q < number_of_rectangles(); q++) {
 		std::vector<Rectangle> * rec_rooms = new std::vector<Rectangle>;
@@ -462,7 +452,7 @@ int House::interlock_length(Rectangle &rect) {
 
 int House::add_doors() {
 	delete doors;
-	doors = new std::vector<std::pair<int, int> >;
+	doors = new std::set<point>;
 	for (unsigned int i = 0; i < number_of_rooms(); i++) {
 //		int ndr = (rand() % 9 == 0) ? 2 : 1;
 //		std::vector<std::pair<int, int> > * rperim = room_at(i).perimeter();
@@ -476,7 +466,7 @@ int House::add_doors() {
 			int inter = interlock(tr, otr);
 			if (inter > 2) {
 				std::vector<std::pair<int, int> > * ilock = tr.interlock(otr);
-				doors->push_back(ilock->at(rand() % (inter - 2) + 1));
+				doors->insert(ilock->at(rand() % (inter - 2) + 1));
 				delete ilock;
 			}
 		}
@@ -499,39 +489,27 @@ void House::add_outside_doors() {
 		cr = room_at(rand() % nr);
 	} while (cr.ylow() != yl || cr.width() < 3);
 
-	doors->push_back(std::make_pair(yl, rand() % (cr.width() - 2) + cr.xlow() + 1));
+	doors->insert(std::make_pair(yl, rand() % (cr.width() - 2) + cr.xlow() + 1));
 
 	do {
 		cr = room_at(rand() % nr);
 	} while (cr.xlow() != xl || cr.height() < 3);
 
-	doors->push_back(std::make_pair(rand() % (cr.height() - 2) + cr.ylow() + 1, xl));
+	doors->insert(std::make_pair(rand() % (cr.height() - 2) + cr.ylow() + 1, xl));
 
 
 	do {
 		cr = room_at(rand() % nr);
 	} while (cr.yhigh() != yh || cr.width() < 3);
 
-	doors->push_back(std::make_pair(yh, rand() % (cr.width() - 2) + cr.xlow() + 1));
+	doors->insert(std::make_pair(yh, rand() % (cr.width() - 2) + cr.xlow() + 1));
 
 	do {
 		cr = room_at(rand() % nr);
 	} while (cr.xhigh() != xh || cr.height() < 3);
 
-	doors->push_back(std::make_pair(rand() % (cr.height() - 2) + cr.ylow() + 1, xh));
+	doors->insert(std::make_pair(rand() % (cr.height() - 2) + cr.ylow() + 1, xh));
 
-//	std::vector<std::pair<int, int> > * hperim = perimeter();
-//	if (hperim->empty()) {
-//		delete hperim;
-//		return;
-//	}
-//	unsigned int permimnum = hperim->size();
-//	while (numdoors) {
-//		doors->push_back(hperim->at(rand() % permimnum));
-//		numdoors--;
-//	}
-//
-//	delete hperim;
 }
 
 std::vector<Rectangle> * build_areas(Rectangle& _bound, int numrecs, int averecsize, int recspread = 0, int _overlaps = 4) {
@@ -591,20 +569,22 @@ std::vector<Rectangle> * build_areas(Rectangle& _bound, int numrecs, int averecs
 	return ars;
 }
 
-bool House::create(Rectangle& _bound, Building _b_t) {
-	bounds = _bound;
-	building_type = _b_t;
+bool House::create(const Rectangle& _bound, Building _b_t) {
+//	std::cout << "\tStart create()" << std::endl;
+	_bounds = _bound;
+//	std::cout << "\t\tBound area = " << _bounds.area() << std::endl;
+	_building_type = _b_t;
 
 	delrecs();
 
-	switch (building_type) {
+	switch (_building_type) {
 		case Building::Hovel: {
-			if (bounds.width() < 10 || bounds.height() < 10)
+			if (_bounds.width() < 10 || _bounds.height() < 10)
 				return false;
 			int dy = rand() % 3 + rand() % 3 + 5;
 			int dx = rand() % 3 + rand() % 3 + 5;
-			int yl = bounds.ylow() + ((bounds.height() == dy + 1) ? (0) : (rand() % (bounds.height() - dy - 1)));
-			int xl = bounds.xlow() + ((bounds.width() == dx + 1) ? (0) : (rand() % (bounds.width() - dx - 1)));
+			int yl = bounds().ylow() + ((bounds().height() == dy + 1) ? (0) : (rand() % (bounds().height() - dy - 1)));
+			int xl = bounds().xlow() + ((bounds().width() == dx + 1) ? (0) : (rand() % (bounds().width() - dx - 1)));
 			Rectangle hvlrec(yl, xl, dy, dx);
 			areas->push_back(hvlrec);
 			delete rooms;
@@ -615,12 +595,12 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 		}
 			break;
 		case Building::Cottage:
-			if (bounds.width() < 25 || bounds.height() < 25)
+			if (_bounds.width() < 25 || _bounds.height() < 25)
 				return false;
 			else {
 				int numrecs = 3 + rand() % 2 + rand() % 2;
 				delete areas;
-				areas = build_areas(bounds, numrecs, 6, 2, 5);
+				areas = build_areas(_bounds, numrecs, 6, 2, 5);
 				if (areas->empty())
 					return false;
 				for (unsigned int i = 0; i < areas->size(); i++) {
@@ -634,11 +614,11 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 
 			break;
 		case Building::Apartment:
-			if (bounds.width() < 30 || bounds.height() < 30)
+			if (_bounds.width() < 30 || _bounds.height() < 30)
 				return false;
 			else {
 				delete areas;
-				areas = build_areas(bounds, 1, 25, 4);
+				areas = build_areas(_bounds, 1, 25, 4);
 				if (areas->empty())
 					return false;
 				delete rooms;
@@ -649,14 +629,14 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 
 			break;
 		case Building::Tavern:
-			if (bounds.width() < 20 || bounds.height() < 20)
+			if (_bounds.width() < 20 || _bounds.height() < 20)
 				return false;
 			else {
 				int dy = rand() % 3 + rand() % 3 + 6;
 				int dx = rand() % 3 + rand() % 3 + 6;
 				
-				int yl = bounds.ylow() + (rand() % (bounds.height() - dy - 10)) + 5;
-				int xl = bounds.xlow() + (rand() % (bounds.width() - dx - 10)) + 5;
+				int yl = _bounds.ylow() + (rand() % (_bounds.height() - dy - 10)) + 5;
+				int xl = _bounds.xlow() + (rand() % (_bounds.width() - dx - 10)) + 5;
 
 				Rectangle mainroom(yl, xl, dy, dx);
 				areas->push_back(mainroom);
@@ -747,11 +727,11 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 			}
 			break;
 		case Building::Warehouse:
-			if (bounds.width() < 15 || bounds.height() < 15)
+			if (_bounds.width() < 15 || _bounds.height() < 15)
 				return false;
 			else {
 				delete areas;
-				areas = build_areas(bounds, 1, 13, 2);
+				areas = build_areas(_bounds, 1, 13, 2);
 				if (areas->empty())
 					return false;
 				for (unsigned int i = 0; i < areas->size(); i++) {
@@ -765,11 +745,11 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 
 			break;
 		case Building::Shop:
-			if (bounds.width() < 15 || bounds.height() < 15)
+			if (_bounds.width() < 15 || _bounds.height() < 15)
 				return false;
 			else {
 				delete areas;
-				areas = build_areas(bounds, 2, 6, 2);
+				areas = build_areas(_bounds, 2, 6, 2);
 				if (areas->empty())
 					return false;
 				rooms->push_back(areas->at(0));
@@ -784,12 +764,12 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 
 			break;
 		case Building::Mansion:
-			if (bounds.width() < 20 || bounds.height() < 20 || bounds.area() < 2500)
+			if (_bounds.width() < 20 || _bounds.height() < 20 || _bounds.area() < 2500)
 				return false;
 			else {
 				int numrecs = 8 + rand() % 2 - rand() % 2;
 				delete areas;
-				areas = build_areas(bounds, numrecs, 8, 3, 4);
+				areas = build_areas(_bounds, numrecs, 8, 3, 4);
 				if (areas->empty())
 					return false;
 				for (unsigned int i = 0; i < areas->size(); i++) {
@@ -803,12 +783,14 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 
 			break;
 		case Building::Palace:
-			if (bounds.width() < 50 || bounds.height() < 50 || bounds.area() < 10000)
+			if (_bounds.width() < 50 || _bounds.height() < 50 || _bounds.area() < 10000) {
+//				std::cout << "\tPalace Fail 1" << std::endl;
 				return false;
+			}
 			else {
 				int numrecs = 15 + rand() % 4 - rand() % 4;
 				delete areas;
-				areas = build_areas(bounds, numrecs, 12, 3, 7);
+				areas = build_areas(_bounds, numrecs, 12, 3, 7);
 				if (areas->empty())
 					return false;
 				for (unsigned int i = 0; i < areas->size(); i++) {
@@ -823,6 +805,7 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 			
 			break;
 		case Building::None:
+//			std::cout << "Fail - none" << std::endl;
 			return false;
 			break;
 	}
@@ -832,8 +815,10 @@ bool House::create(Rectangle& _bound, Building _b_t) {
 
 bool House::create(Building _b_t) {
 	Rectangle nbounds;
+
+//	std::cout << (int)_building_type << std::endl;
 	
-	switch (building_type) {
+	switch (_b_t) {
 		case Building::Hovel: 
 			nbounds = Rectangle(0, 0, 10, 10);
 			break;
@@ -898,7 +883,7 @@ std::vector<Rectangle> * dividerec(Rectangle& rec, int minsize, int maxsize) {
 
 
 void House::move_to(std::pair<int, int> point) {
-	std::pair<int, int> diff = std::make_pair(bounds.ylow() - point.first, bounds.xlow() - point.second);
+	std::pair<int, int> diff = std::make_pair(_bounds.ylow() - point.first, _bounds.xlow() - point.second);
 	operator-=(diff);
 }
 

@@ -18,6 +18,7 @@
 #include "city.h"
 #include <map>
 #include <stack>
+//#include <iostream>
 
 /*
  *--------------------------------------------------------------------------------------
@@ -137,7 +138,7 @@ City::operator = ( const City &other )
 }  /* -----  end of method City::operator =  (assignment operator)  ----- */
 
 bool City::add_house_object(House * _building) {
-	if (!bounds().contains(_building->bounds))
+	if (!bounds().contains(_building->bounds()))
 		return false;
 	buildings->push_back(_building);
 
@@ -154,32 +155,34 @@ bool City::add_house_object(House * _building) {
 			objectmap[internal_walls->at(i).first][internal_walls->at(i).second] = EnvironmentObject::InsideWall;
 	delete internal_walls;
 
-	std::vector<std::pair<int, int> > * external_walls = _building->perimeter();
+	std::set<std::pair<int, int> > * external_walls = _building->perimeter();
 	if (!external_walls->empty())
-		for (unsigned int i = 0; i < external_walls->size(); i++)
-			objectmap[external_walls->at(i).first][external_walls->at(i).second] = EnvironmentObject::OutsideWall;
+		for (auto pt : *external_walls)
+			objectmap[pt.first][pt.second] = EnvironmentObject::OutsideWall;
 	delete external_walls;
 
-	std::vector<std::pair<int, int> > * building_doors = _building->get_doors();
+	std::set<std::pair<int, int> > * building_doors = _building->get_doors();
 	if (!building_doors->empty())
-		for (unsigned int i = 0; i < building_doors->size(); i++)
-			objectmap[building_doors->at(i).first][building_doors->at(i).second] = EnvironmentObject::Door;
+		for (auto pt : *building_doors)
+			objectmap[pt.first][pt.second] = EnvironmentObject::Door;
 	delete building_doors;
 
 	return true;
 }
 
 bool City::add_building(Building building_type) {
+//	std::cout << "Starting add_building, type " << (int)building_type << std::endl;
 	House * newbuilding = new House;
 	if (!newbuilding->create(building_type)) {
 		delete newbuilding;
+//		std::cout << "\tFail 1" << std::endl;
 		return false;
 	}
 	newbuilding->changebounds(1);
 
 	bool workable = false;
-	int buildingheight = newbuilding->bounds.height();
-	int buildingwidth = newbuilding->bounds.width();
+	int buildingheight = newbuilding->bounds().height();
+	int buildingwidth = newbuilding->bounds().width();
 
 	for (unsigned int i = 0; i < CITY_SIZE * 10 && !workable; i++) {
 		int by = (CITY_SIZE - buildingheight) / 2 + rand() % ((CITY_SIZE - buildingheight) / 2) - rand() % ((CITY_SIZE - buildingheight) / 2);
@@ -187,19 +190,21 @@ bool City::add_building(Building building_type) {
 //		int by = rand() % (CITY_SIZE - buildingheight);
 //		int bx = rand() % (CITY_SIZE - buildingwidth);
 		newbuilding->move_to(std::make_pair(by, bx));
-		if (!bounds().contains(newbuilding->bounds))
+		if (!bounds().contains(newbuilding->bounds()))
 			continue;
 		workable = true;
 		for (unsigned int q = 0; q < number_of_buildings(); q++)
-			if (overlap(building_at(q)->bounds, newbuilding->bounds)) {
+			if (overlap(building_at(q)->bounds(), newbuilding->bounds())) {
 				workable = false;
 				break;
 			}
 	}
-	if (!workable) 
+	if (!workable) {
+//		std::cout << "\tFail 2" << std::cout;
 		return false;
+	}
 	std::pair<int, int> centre = std::make_pair((CITY_SIZE - buildingheight) / 2, (CITY_SIZE - buildingwidth) / 2);
-	Rectangle cbounds = newbuilding->bounds;
+	Rectangle cbounds = newbuilding->bounds();
 	std::pair<int, int> initial = std::make_pair(cbounds.ylow(), cbounds.xlow());
 	Rectangle nbounds = cbounds;
 	if (centre.second == initial.second) {
@@ -207,7 +212,7 @@ bool City::add_building(Building building_type) {
 			cbounds = nbounds;
 			nbounds += std::make_pair(SIGN(centre.first - initial.first), 0);
 			for (unsigned int q = 0; q < number_of_buildings(); q++)
-				if (overlap(building_at(q)->bounds, nbounds)) {
+				if (overlap(building_at(q)->bounds(), nbounds)) {
 					workable = false;
 					break;
 				}
@@ -217,7 +222,7 @@ bool City::add_building(Building building_type) {
 			cbounds = nbounds;
 			nbounds += std::make_pair(0, SIGN(centre.second - initial.second));
 			for (unsigned int q = 0; q < number_of_buildings(); q++)
-				if (overlap(building_at(q)->bounds, nbounds)) {
+				if (overlap(building_at(q)->bounds(), nbounds)) {
 					workable = false;
 					break;
 				}
@@ -239,7 +244,7 @@ bool City::add_building(Building building_type) {
 					nbounds += minorchange;
 				}
 				for (unsigned int q = 0; q < number_of_buildings(); q++)
-					if (overlap(building_at(q)->bounds, nbounds)) {
+					if (overlap(building_at(q)->bounds(), nbounds)) {
 						workable = false;
 						break;
 					}
@@ -258,7 +263,7 @@ bool City::add_building(Building building_type) {
 					nbounds += minorchange;
 				}
 				for (unsigned int q = 0; q < number_of_buildings(); q++)
-					if (overlap(building_at(q)->bounds, nbounds)) {
+					if (overlap(building_at(q)->bounds(), nbounds)) {
 						workable = false;
 						break;
 					}
@@ -271,6 +276,7 @@ bool City::add_building(Building building_type) {
 		delete newbuilding;
 		return false;
 	}
+//	std::cout << "\tDone" << std::endl;
 	return true;
 }
 std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::pair<int, int> finish) {
