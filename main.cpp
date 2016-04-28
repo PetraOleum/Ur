@@ -20,25 +20,25 @@ int main() {
 
 	while (!city.add_building(Building::Palace)) ;
 
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < 30; i++)
 		city.add_building(Building::Mansion);
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 100; i++)
 		city.add_building(Building::Cottage);
 
-	for (int i = 0; i < 150; i++)
+	for (int i = 0; i < 20; i++)
 		city.add_building(Building::Apartment);
 
-	for (int i = 0; i < 80; i++)
+	for (int i = 0; i < 50; i++)
 		city.add_building(Building::Shop);
 
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < 30; i++)
 		city.add_building(Building::Warehouse);
 
 	for (int i = 0; i < 30; i++)
 		city.add_building(Building::Tavern);
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 400; i++)
 		city.add_building(Building::Hovel);
 
 	city.add_people(100);
