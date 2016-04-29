@@ -25,6 +25,7 @@
 #include "ur_common.h"
 #include <stdexcept>
 #include <set>
+#include <map>
 
 class Construction {
 	public:
@@ -49,6 +50,8 @@ class Construction {
 		inline Building& building_type() {
 			return _building_type;
 		}
+
+		virtual std::map<point, EnvironmentObject> * all_locations() = 0;
 
 		virtual ~Construction() {
 

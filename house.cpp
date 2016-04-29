@@ -899,3 +899,29 @@ std::vector<std::pair<int, int> > * House::room_walls() {
 	return rwlls;
 		
 }
+
+std::map<point, EnvironmentObject> * House::all_locations() {
+	std::map<point, EnvironmentObject> * _locs = new std::map<point, EnvironmentObject>;
+
+	std::vector<point> * floors = floor_locations();
+	for (point pt : *floors)
+		(*_locs)[pt] = EnvironmentObject::Floor;
+	delete floors;
+
+	std::vector<point> * walls = room_walls();
+	for (point pt : *walls)
+		(*_locs)[pt] = EnvironmentObject::InsideWall;
+	delete walls;
+
+	std::set<point> * external_walls = perimeter();
+	for (point pt : *external_walls)
+		(*_locs)[pt] = EnvironmentObject::OutsideWall;
+	delete external_walls;
+
+	std::set<point> * _doors = get_doors();
+	for (point pt : *_doors)
+		(*_locs)[pt] = EnvironmentObject::Door;
+	delete _doors;
+
+	return _locs;
+}

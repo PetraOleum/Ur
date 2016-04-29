@@ -142,30 +142,35 @@ bool City::add_house_object(House * _building) {
 		return false;
 	buildings->push_back(_building);
 
-	std::vector<std::pair<int, int> > * building_floor = _building->floor_locations();
-	if (building_floor->empty())
-		return true;
-	for (unsigned int i = 0; i < building_floor->size(); i++)
-		objectmap[building_floor->at(i).first][building_floor->at(i).second] = EnvironmentObject::Floor;
-	delete building_floor;
-	
-	std::vector<std::pair<int, int> > * internal_walls = _building->room_walls();
-	if (!internal_walls->empty())
-		for (unsigned int i = 0; i < internal_walls->size(); i++)
-			objectmap[internal_walls->at(i).first][internal_walls->at(i).second] = EnvironmentObject::InsideWall;
-	delete internal_walls;
+//	std::vector<std::pair<int, int> > * building_floor = _building->floor_locations();
+//	if (building_floor->empty())
+//		return true;
+//	for (unsigned int i = 0; i < building_floor->size(); i++)
+//		objectmap[building_floor->at(i).first][building_floor->at(i).second] = EnvironmentObject::Floor;
+//	delete building_floor;
+//	
+//	std::vector<std::pair<int, int> > * internal_walls = _building->room_walls();
+//	if (!internal_walls->empty())
+//		for (unsigned int i = 0; i < internal_walls->size(); i++)
+//			objectmap[internal_walls->at(i).first][internal_walls->at(i).second] = EnvironmentObject::InsideWall;
+//	delete internal_walls;
+//
+//	std::set<std::pair<int, int> > * external_walls = _building->perimeter();
+//	if (!external_walls->empty())
+//		for (auto pt : *external_walls)
+//			objectmap[pt.first][pt.second] = EnvironmentObject::OutsideWall;
+//	delete external_walls;
+//
+//	std::set<std::pair<int, int> > * building_doors = _building->get_doors();
+//	if (!building_doors->empty())
+//		for (auto pt : *building_doors)
+//			objectmap[pt.first][pt.second] = EnvironmentObject::Door;
+//	delete building_doors;
 
-	std::set<std::pair<int, int> > * external_walls = _building->perimeter();
-	if (!external_walls->empty())
-		for (auto pt : *external_walls)
-			objectmap[pt.first][pt.second] = EnvironmentObject::OutsideWall;
-	delete external_walls;
-
-	std::set<std::pair<int, int> > * building_doors = _building->get_doors();
-	if (!building_doors->empty())
-		for (auto pt : *building_doors)
-			objectmap[pt.first][pt.second] = EnvironmentObject::Door;
-	delete building_doors;
+	std::map<point, EnvironmentObject> * locmap = _building->all_locations();
+	for (auto const &iter : *locmap)
+		objectmap[iter.first.first][iter.first.second] = iter.second;
+	delete locmap;
 
 	return true;
 }

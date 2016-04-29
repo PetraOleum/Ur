@@ -110,6 +110,8 @@ class House : public Construction
 
 		std::vector<std::pair<int, int> > * room_walls();
 
+		std::map<point, EnvironmentObject> * all_locations();
+
 		bool contains(std::pair<int, int> point);
 
 		bool contains(Rectangle &rect);
