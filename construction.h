@@ -41,7 +41,13 @@ class Construction {
 
 		virtual unsigned int number_of_rectangles() = 0;
 
+		virtual bool create(Building _b_t) = 0;
+
 		virtual bool create(const Rectangle& _bound, Building _b_t) = 0;
+
+		virtual void changebounds(int buffer) = 0;
+
+		virtual void move_to(std::pair<int, int> point) = 0;
 
 		inline Rectangle& bounds() {
 			return _bounds;

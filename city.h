@@ -64,9 +64,9 @@ class City : CityHelper
 				return people->size();
 		}
 
-		inline House * building_at(const unsigned int index) {
+		inline Construction * building_at(const unsigned int index) {
 			if (index >= number_of_buildings())
-				throw std::out_of_range("Attempting to access non-existant building House in City. Out of range error std::out_of_range");
+				throw std::out_of_range("Attempting to access non-existant building Construction in City. Out of range error std::out_of_range");
 			else
 				return buildings->at(index);
 		}
@@ -193,11 +193,11 @@ class City : CityHelper
 		/* ====================  DATA MEMBERS  ======================================= */
 
 	private:
-		bool add_house_object(House * _building);
+		bool add_house_object(Construction * _building);
 
 		/* ====================  DATA MEMBERS  ======================================= */
 		
-		std::vector<House *> * buildings;
+		std::vector<Construction *> * buildings;
 
 		EnvironmentObject** objectmap;
 

@@ -29,7 +29,7 @@
  */
 City::City ()
 {
-	buildings = new std::vector<House *>;
+	buildings = new std::vector<Construction *>;
 	objectmap = new EnvironmentObject*[CITY_SIZE];
 	for (int y = 0; y < CITY_SIZE; y++) {
 		objectmap[y] = new EnvironmentObject[CITY_SIZE];
@@ -54,7 +54,7 @@ City::City ( const City &other )
 	for (int y = 0; y < CITY_SIZE; y++)
 		delete[] objectmap[y];
 	delete[] objectmap;
-	buildings = new std::vector<House *>;
+	buildings = new std::vector<Construction *>;
 	buildings->insert(buildings->end(), other.buildings->begin(), other.buildings->end());
 	objectmap = new EnvironmentObject*[CITY_SIZE];
 	for (int y = 0; y < CITY_SIZE; y++) {
@@ -110,7 +110,7 @@ City::operator = ( const City &other )
 		for (int y = 0; y < CITY_SIZE; y++)
 			delete[] objectmap[y];
 		delete[] objectmap;
-		buildings = new std::vector<House *>;
+		buildings = new std::vector<Construction *>;
 		buildings->insert(buildings->end(), other.buildings->begin(), other.buildings->end());
 		objectmap = new EnvironmentObject*[CITY_SIZE];
 		for (int y = 0; y < CITY_SIZE; y++) {
@@ -137,7 +137,7 @@ City::operator = ( const City &other )
 	return *this;
 }  /* -----  end of method City::operator =  (assignment operator)  ----- */
 
-bool City::add_house_object(House * _building) {
+bool City::add_house_object(Construction * _building) {
 	if (!bounds().contains(_building->bounds()))
 		return false;
 	buildings->push_back(_building);
@@ -177,7 +177,7 @@ bool City::add_house_object(House * _building) {
 
 bool City::add_building(Building building_type) {
 //	std::cout << "Starting add_building, type " << (int)building_type << std::endl;
-	House * newbuilding = new House;
+	Construction * newbuilding = new House;
 	if (!newbuilding->create(building_type)) {
 		delete newbuilding;
 //		std::cout << "\tFail 1" << std::endl;
