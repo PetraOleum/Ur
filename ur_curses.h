@@ -110,6 +110,7 @@ void start_curses() {
 	main_window = newwin(MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_Y, MAIN_WIN_X);
 	status_window = newwin(STATUS_WIN_HEIGHT, STATUS_WIN_WIDTH, STATUS_WIN_Y, STATUS_WIN_X);
 	help_window = newwin(HELP_WIN_HEIGHT, HELP_WIN_WIDTH, HELP_WIN_Y, HELP_WIN_X);
+	keypad(main_window, true);
 	help_win_panel = new_panel(help_window);
 	main_win_panel = new_panel(main_window);
 	top_win_panel = new_panel(top_window);
@@ -184,6 +185,7 @@ void refreshmap(City &_city) {
 	displaybounds = Rectangle(displaybounds.ylow(), displaybounds.xlow(), MAIN_WIN_HEIGHT - 1, MAIN_WIN_WIDTH - 1);
 	delwin(main_window);
 	main_window = newwin(MAIN_WIN_HEIGHT, MAIN_WIN_WIDTH, MAIN_WIN_Y, MAIN_WIN_X);
+	keypad(main_window, true);
 	replace_panel(main_win_panel, main_window);
 	wtimeout(main_window, (int)TimeoutType);
 	for (int y = 0; y < displaybounds.height(); y++)

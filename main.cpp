@@ -82,7 +82,7 @@ int main() {
 		city.junk_set(pt, Furniture::Basin);
 	}
 
-	char ch;
+	int ch;
 
 	start_curses();
 	refreshmap(city);
@@ -90,18 +90,22 @@ int main() {
 	while ((ch = wgetch(main_window)) != 'q') {
 		switch (ch) {
 			case 'h':
+			case KEY_LEFT:
 				displaybounds += std::make_pair(0, -5);
 				refreshmap(city);
 				break;
 			case 'l':
+			case KEY_RIGHT:
 				displaybounds += std::make_pair(0, 5);
 				refreshmap(city);
 				break;
 			case 'j':
+			case KEY_DOWN:
 				displaybounds += std::make_pair(5, 0);
 				refreshmap(city);
 				break;
 			case 'k':
+			case KEY_UP:
 				displaybounds += std::make_pair(-5, 0);
 				refreshmap(city);
 				break;
