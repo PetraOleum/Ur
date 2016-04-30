@@ -99,7 +99,7 @@ void start_curses() {
 	if (curses_running)
 		return;
 	initscr();
-	TimeoutType = timeouttype_t::Tick;
+	TimeoutType = timeouttype_t::Wait;
 	start_color();
 	initcolors();
 	cbreak();
