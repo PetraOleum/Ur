@@ -126,6 +126,7 @@ int main() {
 				refreshmap(city);
 				break;
 			case ' ':
+			case KEY_HOME:
 				centre_on(std::make_pair(CITY_SIZE / 2, CITY_SIZE / 2));
 				refreshmap(city);
 				break;
