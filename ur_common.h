@@ -45,7 +45,8 @@ enum class Building {
 	Shop,
 	Apartment,
 	Mansion,
-	Palace
+	Palace,
+	Field
 };
 
 enum class EnvironmentObject : uint8_t {
@@ -54,7 +55,8 @@ enum class EnvironmentObject : uint8_t {
 	Floor,
 	OutsideWall,
 	InsideWall,
-	Door
+	Door,
+	Field
 		// Add more as they come
 };
 
@@ -89,6 +91,8 @@ inline bool passible(const EnvironmentObject& _ob) {
 			return false;
 		case EnvironmentObject::Door:
 			return true;
+		case EnvironmentObject::Field:
+			return true;
 		default:
 			throw std::out_of_range("Attempting to access the passibility of an invalid EnvironmentObject. std::out_of_range");
 	}
@@ -108,6 +112,8 @@ inline movement_cost_t movement_cost(const EnvironmentObject& _ob) {
 			return 10000;
 		case EnvironmentObject::Door:
 			return 1.5;
+		case EnvironmentObject::Field:
+			return 2;
 		default:
 			throw std::out_of_range("Attempting to access the movement cost of an invalid EnvironmentObject. std::out_of_range");
 	}

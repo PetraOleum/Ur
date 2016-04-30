@@ -1,10 +1,10 @@
 all: ur
 
-ur: main.o rectangle.o house.o city.o being.o
-	g++ -o ur main.o rectangle.o house.o city.o being.o -std=c++11 -lpanel -lncurses
+ur: main.o rectangle.o house.o city.o being.o field.o
+	g++ -o ur main.o rectangle.o house.o city.o being.o field.o -std=c++11 -lpanel -lncurses
 
-debug: maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o
-	g++ -g -o ur maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o -std=c++11 -lpanel -lncurses
+debug: maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o fielddbg.o
+	g++ -g -o ur maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o fielddbg.o -std=c++11 -lpanel -lncurses
 
 main.o:
 	g++ -c main.cpp -std=c++11
@@ -35,6 +35,12 @@ being.o:
 
 beingdbg.o:
 	g++ -c -g -o beingdbg.o being.cpp -std=c++11
+
+field.o:
+	g++ -c field.cpp -std=c++11
+
+fielddbg.o:
+	g++ -c -g -o fielddbg.o field.cpp -std=c++11
 
 clean:
 	rm *.o ur

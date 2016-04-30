@@ -26,6 +26,7 @@
 #include "being.h"
 #include "cityhelper.h"
 #include "construction.h"
+#include "field.h"
 
 #include <queue>
 #include <map>

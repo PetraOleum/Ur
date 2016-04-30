@@ -38,8 +38,11 @@ int main() {
 	for (int i = 0; i < 30; i++)
 		city.add_building(Building::Tavern);
 
-	for (int i = 0; i < 400; i++)
+	for (int i = 0; i < 300; i++)
 		city.add_building(Building::Hovel);
+
+	for (int i = 0; i < 50; i++)
+		city.add_building(Building::Field);
 
 	city.add_people(100);
 

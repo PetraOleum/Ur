@@ -19,7 +19,7 @@
 #include "house.h"
 #include <algorithm>
 #include <climits>
-#include <stdlib.h>
+#include <cstdlib>
 #include <set>
 //#include <iostream>
 
@@ -804,7 +804,7 @@ bool House::create(const Rectangle& _bound, Building _b_t) {
 			add_outside_doors();
 			
 			break;
-		case Building::None:
+		default:
 //			std::cout << "Fail - none" << std::endl;
 			return false;
 			break;
@@ -843,7 +843,7 @@ bool House::create(Building _b_t) {
 		case Building::Palace:
 			nbounds = Rectangle(0, 0, 100, 100);
 			break;
-		case Building::None:
+		default:
 			break;
 	}
 

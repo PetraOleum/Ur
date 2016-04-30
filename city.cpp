@@ -177,7 +177,15 @@ bool City::add_house_object(Construction * _building) {
 
 bool City::add_building(Building building_type) {
 //	std::cout << "Starting add_building, type " << (int)building_type << std::endl;
-	Construction * newbuilding = new House;
+	Construction * newbuilding;
+	switch (building_type) {
+		case Building::Field:
+			newbuilding = new Field;
+			break;
+		default:
+			newbuilding = new House;
+	}
+//	newbuilding = new House;
 	if (!newbuilding->create(building_type)) {
 		delete newbuilding;
 //		std::cout << "\tFail 1" << std::endl;

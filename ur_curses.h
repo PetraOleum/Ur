@@ -92,6 +92,7 @@ void initcolors() {
 	init_pair(10, COLOR_CYAN, COLOR_BLACK);
 	init_pair(11, COLOR_RED, COLOR_GREEN);
 	init_pair(12, COLOR_BLACK, COLOR_WHITE);
+	init_pair(13, COLOR_GREEN, COLOR_BLACK);
 }
 
 void start_curses() {
@@ -148,6 +149,8 @@ inline char environment_object_symbol(EnvironmentObject _ob) {
 			return ' ';
 		case EnvironmentObject::Door:
 			return '+';
+		case EnvironmentObject::Field:
+			return '~';
 	}
 	return '\0';
 }
@@ -166,6 +169,8 @@ inline int environment_object_colour(EnvironmentObject _ob) {
 			return COLOR_PAIR(3);
 		case EnvironmentObject::Door:
 			return COLOR_PAIR(9);
+		case EnvironmentObject::Field:
+			return COLOR_PAIR(13);
 	}
 	return COLOR_PAIR(7);
 }

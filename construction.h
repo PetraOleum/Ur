@@ -35,11 +35,13 @@ class Construction {
 			building_type() = Building::None;
 		}
 
-		virtual std::set<point> * perimeter() = 0;
+//		virtual std::set<point> * perimeter() = 0;
 
-		virtual std::set<point> * get_doors() = 0;
+//		virtual std::set<point> * get_doors() = 0;
 
-		virtual unsigned int number_of_rectangles() = 0;
+//		virtual unsigned int number_of_rectangles() = 0;
+
+		virtual bool create() = 0;
 
 		virtual bool create(Building _b_t) = 0;
 
