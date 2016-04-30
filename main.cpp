@@ -130,6 +130,8 @@ int main() {
 				refreshmap(city);
 				break;
 			case 'r':
+			case KEY_RESIZE:
+			case '':
 				refreshmap(city);
 				break;
 			case 'a':
