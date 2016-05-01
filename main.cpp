@@ -18,33 +18,43 @@ int main() {
 
 	City city;
 
-	while (!city.add_building(Building::Palace)) ;
+//	while (!city.add_building(Building::Palace)) ;
+//
+//	for (int i = 0; i < 30; i++)
+//		city.add_building(Building::Mansion);
+//
+//	for (int i = 0; i < 100; i++)
+//		city.add_building(Building::Cottage);
+//
+//	for (int i = 0; i < 20; i++)
+//		city.add_building(Building::Apartment);
+//
+//	for (int i = 0; i < 50; i++)
+//		city.add_building(Building::Shop);
+//
+//	for (int i = 0; i < 30; i++)
+//		city.add_building(Building::Warehouse);
+//
+//	for (int i = 0; i < 30; i++)
+//		city.add_building(Building::Tavern);
+//
+//	for (int i = 0; i < 300; i++)
+//		city.add_building(Building::Hovel);
+//
+//	for (int i = 0; i < 50; i++)
+//		city.add_building(Building::Field);
+//
+//	city.add_people(100);
 
-	for (int i = 0; i < 30; i++)
-		city.add_building(Building::Mansion);
+	while (!city.add_building(Building::Tavern)) ;
 
-	for (int i = 0; i < 100; i++)
-		city.add_building(Building::Cottage);
-
-	for (int i = 0; i < 20; i++)
-		city.add_building(Building::Apartment);
-
-	for (int i = 0; i < 50; i++)
-		city.add_building(Building::Shop);
-
-	for (int i = 0; i < 30; i++)
-		city.add_building(Building::Warehouse);
-
-	for (int i = 0; i < 30; i++)
-		city.add_building(Building::Tavern);
-
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < 3; i++)
 		city.add_building(Building::Hovel);
 
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 80; i++)
 		city.add_building(Building::Field);
 
-	city.add_people(100);
+	city.add_people(5);
 
 	for (int i = 0; i < 1500; i++) {
 		point pt;
