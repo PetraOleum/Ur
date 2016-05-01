@@ -320,9 +320,9 @@ std::queue<std::pair<int, int> > * City::astar(std::pair<int, int> start, std::p
 					continue;
 				point next = std::make_pair(current.first + yd, current.second + xd);
 				EnvironmentObject nob = get(next.first, next.second);
-				if (!passible(nob) || point_hasperson(next))
+				if (!passible(nob))
 					continue;
-				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST : 0);
+				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST : 0) + ((point_hasperson(next)) ? 20 : 0);
 				if (cost_so_far.find(next) == cost_so_far.end()) {
 					fronteir.push(std::make_pair(new_cost, next));
 					came_from[next] = current;
@@ -401,9 +401,9 @@ point City::find_nearest(point start, std::function<bool(point, EnvironmentObjec
 					continue;
 				point next = std::make_pair(current.first + yd, current.second + xd);
 				EnvironmentObject nob = get(next.first, next.second);
-				if (!passible(nob) || point_hasperson(next))
+				if (!passible(nob))
 					continue;
-				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST  : 0);
+				movement_cost_t new_cost = movement_cost(nob) + current_cost + ((ABS(yd) + ABS(xd) == 2) ? DIAGONAL_COST  : 0) + ((point_hasperson(next)) ? 20 : 0);
 				if (cost_so_far.find(next) == cost_so_far.end()) {
 					fronteir.push(std::make_pair(new_cost, next));
 					came_from[next] = current;
