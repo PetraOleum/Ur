@@ -1,10 +1,10 @@
 all: ur
 
-ur: main.o rectangle.o house.o city.o being.o field.o
-	g++ -O -o ur main.o rectangle.o house.o city.o being.o field.o -std=c++11 -lpanel -lncurses
+ur: main.o rectangle.o house.o city.o being.o field.o beingai.o
+	g++ -O -o ur main.o rectangle.o house.o city.o being.o beingai.o field.o -std=c++11 -lpanel -lncurses
 
-debug: maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o fielddbg.o
-	g++ -g -o ur maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o fielddbg.o -std=c++11 -lpanel -lncurses
+debug: maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o fielddbg.o beingaidbg.o
+	g++ -g -o ur maindbg.o rectangledbg.o housedbg.o citydbg.o beingdbg.o beingaidbg.o fielddbg.o -std=c++11 -lpanel -lncurses
 
 main.o:
 	g++ -O -c main.cpp -std=c++11
@@ -35,6 +35,12 @@ being.o:
 
 beingdbg.o:
 	g++ -c -g -o beingdbg.o being.cpp -std=c++11
+
+beingai.o:
+	g++ -O -c beingai.cpp -std=c++11
+
+beingaidbg.o:
+	g++ -c -g -o beingaidbg.og beingai.cpp -std=c++11
 
 field.o:
 	g++ -O -c field.cpp -std=c++11

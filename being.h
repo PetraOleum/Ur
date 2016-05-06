@@ -23,7 +23,8 @@
 #include "ur_common.h"
 #include <utility>
 #include <queue>
-//#include "city.h"
+#include <ctime>
+#include <cstdlib>
 #include "cityhelper.h"
 
 /*
@@ -56,6 +57,13 @@ class Being
 			return carrying_furniture;
 		}		/* -----  end of method Being::get_carrying_furnature  ----- */
 
+		inline BeingRole get_role() const {
+			return role;
+		}
+
+		
+		/* ====================  MUTATORS      ======================================= */
+
 		/*
 		 *--------------------------------------------------------------------------------------
 		 *       Class:  Being
@@ -67,11 +75,13 @@ class Being
 			carrying_furniture	= value;
 			return ;
 		}		/* -----  end of method Being::set_carrying_furnature  ----- */
-		
-		/* ====================  MUTATORS      ======================================= */
 
 		inline void set_init_position(point _pos) {
 			position = initialposition = _pos;
+		}
+
+		inline void set_role(BeingRole br) {
+			role = br;
 		}
 
 		void act();
@@ -96,8 +106,6 @@ class Being
 		point initialposition;
 
 		std::set<point> * home;
-
-//		bool failed_action;
 
 		BeingRole role;
 
