@@ -40,7 +40,7 @@ beingai.o:
 	g++ -O -c beingai.cpp -std=c++11
 
 beingaidbg.o:
-	g++ -c -g -o beingaidbg.og beingai.cpp -std=c++11
+	g++ -c -g -o beingaidbg.o beingai.cpp -std=c++11
 
 field.o:
 	g++ -O -c field.cpp -std=c++11
