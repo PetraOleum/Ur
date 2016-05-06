@@ -33,7 +33,8 @@ Being::Being (CityHelper * _helper)
 	planned_path = new std::queue<std::pair<int, int> >;
 	home = new std::set<point>;
 	carrying_furniture = Furniture::None;
-	failed_action = false;
+
+	role = BeingRole::Farmer;
 }  /* -----  end of method Being::Being  (constructor)  ----- */
 
 /*
@@ -67,7 +68,7 @@ Being::Being ( const Being &other )
 		home->insert(other.home->begin(), other.home->end());
 	}
 	carrying_furniture = other.carrying_furniture;
-	failed_action = other.failed_action;
+	role = other.role;
 }  /* -----  end of method Being::Being  (copy constructor)  ----- */
 
 /*
@@ -117,7 +118,7 @@ Being::operator = ( const Being &other )
 			home->insert(other.home->begin(), other.home->end());
 		}
 		carrying_furniture = other.carrying_furniture;
-		failed_action = other.failed_action;
+		role = other.role;
 	}
 	return *this;
 }  /* -----  end of method Being::operator =  (assignment operator)  ----- */
@@ -207,7 +208,6 @@ void Being::act() {
 			planned_path->pop();
 			break;
 		case MovementOutcome::InsufficientMovement:
-			failed_action = true;
 			break;
 		case MovementOutcome::Blocked:
 		case MovementOutcome::Illegal:

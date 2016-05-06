@@ -97,7 +97,9 @@ class Being
 
 		std::set<point> * home;
 
-		bool failed_action;
+//		bool failed_action;
+
+		BeingRole role;
 
 }; /* -----  end of class Being  ----- */
 

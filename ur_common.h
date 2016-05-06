@@ -77,6 +77,12 @@ enum class MovementOutcome : uint8_t {
 	Legal
 };
 
+enum class BeingRole : uint8_t {
+	Farmer,
+	Baker,
+	Lord
+};
+
 inline bool passible(const EnvironmentObject& _ob) {
 	switch (_ob) {
 		case EnvironmentObject::Nothingness:
