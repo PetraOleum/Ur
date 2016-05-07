@@ -67,7 +67,8 @@ enum class Furniture : uint8_t {
 	Barrel,
 	Bed,
 	Dresser,
-	Basin
+	Basin,
+	Cabbage
 };
 
 enum class MovementOutcome : uint8_t {

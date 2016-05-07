@@ -109,6 +109,14 @@ class Being
 
 		BeingRole role;
 
+		// AI methods
+
+		void Farmer_act();
+
+		void Lord_act();
+
+		void Baker_act();
+
 }; /* -----  end of class Being  ----- */
 
 #endif   /* ----- #ifndef BEING_INC  ----- */

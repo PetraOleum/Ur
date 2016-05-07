@@ -110,3 +110,28 @@ void Being::act() {
 			break;
 	}
 }
+
+void Being::Farmer_act() {
+	switch (carrying_furniture) {
+		case Furniture::Cabbage:
+			// Go home and deposit
+
+			break;
+		case Furniture::None:
+
+			// Go get some
+
+			break;
+		default:
+			// Drop it at home
+			break;
+	}
+}
+
+void Being::Baker_act() {
+
+}
+
+void Being::Lord_act() {
+
+}

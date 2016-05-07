@@ -247,6 +247,8 @@ inline char furniture_char(const Furniture& _f) {
 			return 'h';
 		case Furniture::Basin:
 			return 'U';
+		case Furniture::Cabbage:
+			return '&';
 		default:
 			throw std::out_of_range("furniture_char() given invalid furniture object. std::out_of_range");
 	}
