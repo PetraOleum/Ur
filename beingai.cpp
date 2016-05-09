@@ -112,18 +112,36 @@ void Being::act() {
 }
 
 void Being::Farmer_act() {
+	auto clearFloorInside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt) && (home->find(_pt) != home->end());
+	};
+
+	auto dropofffurniture = [this, &clearFloorInside]() {
+		point dropoff = helper->find_nearest(position, clearFloorInside);
+		if (dropoff == position) {
+			if (helper->drop(position, carrying_furniture)) {
+				carrying_furniture = Furniture::None;
+				return true;
+			} else
+				return false;
+		}
+		else {
+			delete planned_path;
+			planned_path = helper->astar(position, dropoff);
+		}
+		return true;
+	};
 	switch (carrying_furniture) {
 		case Furniture::Cabbage:
 			// Go home and deposit
-
+			dropofffurniture();
 			break;
 		case Furniture::None:
-
 			// Go get some
-
 			break;
 		default:
 			// Drop it at home
+			dropofffurniture();
 			break;
 	}
 }
