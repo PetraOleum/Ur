@@ -115,7 +115,7 @@ class Being
 
 		void Lord_act();
 
-		void Baker_act();
+		void Cook_act();
 
 }; /* -----  end of class Being  ----- */
 

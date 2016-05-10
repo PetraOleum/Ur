@@ -113,10 +113,10 @@ void Being::act() {
 
 void Being::Farmer_act() {
 	auto clearFloorInside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
-		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && !helper->point_hasperson(_pt) && (home->find(_pt) != home->end());
+		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (!helper->point_hasperson(_pt)  || _pt == position) && (home->find(_pt) != home->end());
 	};
 
-	auto dropofffurniture = [this, &clearFloorInside]() {
+	auto dropofffurniture = [this, clearFloorInside]() {
 		point dropoff = helper->find_nearest(position, clearFloorInside);
 		if (dropoff == position) {
 			if (helper->drop(position, carrying_furniture)) {
@@ -128,9 +128,33 @@ void Being::Farmer_act() {
 		else {
 			delete planned_path;
 			planned_path = helper->astar(position, dropoff);
+			if (planned_path->empty())
+				return false;
 		}
 		return true;
 	};
+
+	auto cabbageOutside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj != EnvironmentObject::Floor) && (_f == Furniture::Cabbage) && (!helper->point_hasperson(_pt) || _pt == position);
+	};
+
+	auto pickupCabbage = [this, cabbageOutside]() {
+		point pickup = helper->find_nearest(position, cabbageOutside);
+		if (pickup == position) {
+			carrying_furniture = helper->pickup(position);
+			if (carrying_furniture == Furniture::Cabbage)
+				return true;
+			else
+				return false;
+		} else {
+			delete planned_path;
+			planned_path = helper->astar(position, pickup);
+			if (planned_path->empty())
+				return false;
+		}
+		return true;
+	};
+
 	switch (carrying_furniture) {
 		case Furniture::Cabbage:
 			// Go home and deposit
@@ -138,6 +162,7 @@ void Being::Farmer_act() {
 			break;
 		case Furniture::None:
 			// Go get some
+			pickupCabbage();
 			break;
 		default:
 			// Drop it at home
@@ -146,10 +171,80 @@ void Being::Farmer_act() {
 	}
 }
 
-void Being::Baker_act() {
+void Being::Cook_act() {
+	auto cabbageInside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (!helper->point_hasperson(_pt) || _pt == position) && _f == Furniture::Cabbage && _obj == EnvironmentObject::Floor;
+	};
 
+	auto pickupCabbage = [this, cabbageInside]() {
+		point pickup = helper->find_nearest(position, cabbageInside);
+		if (pickup == position) {
+			carrying_furniture = helper->pickup(position);
+			if (carrying_furniture == Furniture::Cabbage)
+				return true;
+			else
+				return false;
+		} else {
+			delete planned_path;
+			planned_path = helper->astar(position, pickup);
+			if (planned_path->empty())
+				return false;
+		}
+		return true;
+	};
+
+	auto clearFloorInside = [this](point _pt, EnvironmentObject _obj, Furniture _f) {
+		return (_obj == EnvironmentObject::Floor) && (_f == Furniture::None) && (!helper->point_hasperson(_pt)  || _pt == position) && (home->find(_pt) != home->end());
+	};
+
+	auto dropofffurniture = [this, clearFloorInside]() {
+		point dropoff = helper->find_nearest(position, clearFloorInside);
+		if (dropoff == position) {
+			if (helper->drop(position, carrying_furniture)) {
+				carrying_furniture = Furniture::None;
+				return true;
+			} else
+				return false;
+		}
+		else {
+			delete planned_path;
+			planned_path = helper->astar(position, dropoff);
+			if (planned_path->empty())
+				return false;
+		}
+		return true;
+	};
+
+	switch (carrying_furniture) {
+		case Furniture::Cabbage:
+			carrying_furniture = Furniture::Food;
+			break;
+		case Furniture::Food:
+			dropofffurniture();
+			break;
+		case Furniture::None:
+			pickupCabbage();
+			break;
+		default:
+			dropofffurniture();
+			break;
+	}
 }
 
 void Being::Lord_act() {
+	int dist = rand() % 5 + 5;
+	auto randloc = [this, dist](point _pt, EnvironmentObject _obj, Furniture _f) {
+		int dy = _pt.first - position.first;
+		int dx = _pt.second - position.second;
+		dy = (dy > 0) ? dy : -dy;
+		dx = (dx > 0) ? dx : -dx;
+		return (!helper->point_hasperson(_pt) && (dy + dx > dist));
+	};
 
+	point dest = helper->find_nearest(position, randloc);
+	if (dest == position)
+		return;
+
+	delete planned_path;
+	planned_path = helper->astar(position, dest);
 }

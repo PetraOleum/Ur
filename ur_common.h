@@ -68,7 +68,8 @@ enum class Furniture : uint8_t {
 	Bed,
 	Dresser,
 	Basin,
-	Cabbage
+	Cabbage,
+	Food
 };
 
 enum class MovementOutcome : uint8_t {
@@ -80,7 +81,7 @@ enum class MovementOutcome : uint8_t {
 
 enum class BeingRole : uint8_t {
 	Farmer,
-	Baker,
+	Cook,
 	Lord
 };
 
